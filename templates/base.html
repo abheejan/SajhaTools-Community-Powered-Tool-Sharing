@@ -1,0 +1,54 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}SajhaTools{% endblock %}</title>
+    <link href="{% static 'css/output.css' %}" rel="stylesheet">
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans">
+    
+    <nav class="bg-white shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex">
+                    <div class="flex-shrink-0 flex items-center">
+                        <a href="{% url 'home' %}" class="font-bold text-xl text-blue-600">SajhaTools</a>
+                    </div>
+                </div>
+            <div class="flex items-center">
+                {% if user.is_authenticated %}
+                    <span class="mr-4">Hello, {{ user.username }}!</span>
+                    <a href="{% url 'thread-list' %}" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100">Messages</a>
+                    <a href="{% url 'request-dashboard' %}" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100">My Requests</a>
+                    <a href="#" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100">My Tools</a>
+                    <form method="post" action="{% url 'account_logout' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="ml-4 px-3 py-2 rounded-md text-sm font-medium text-white bg-blue-600 hover:bg-blue-700">Logout</button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'account_login' %}" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100">Login</a>
+                    <a href="{% url 'account_signup' %}" class="ml-4 px-3 py-2 rounded-md text-sm font-medium text-white bg-blue-600 hover:bg-blue-700">Sign Up</a>
+                {% endif %}
+            </div>
+
+            </div>
+        </div>
+    </nav>
+
+    <main class="py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            {% block content %}
+            {% endblock %}
+        </div>
+    </main>
+
+    <footer class="bg-white mt-12">
+        <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 text-center text-gray-500 text-sm">
+            <p><strong>© {% now "Y" %} SajhaTools.</strong> Build together, share everything.</p>
+        </div>
+    </footer>
+
+</body>
+</html>

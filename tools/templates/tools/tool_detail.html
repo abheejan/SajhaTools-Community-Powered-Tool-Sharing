@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ tool.name }} - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="bg-white shadow-xl rounded-lg overflow-hidden max-w-4xl mx-auto">
+    <div class="md:flex">
+        <!-- Image Section -->
+        <div class="md:flex-shrink-0">
+            <img class="h-64 w-full object-cover md:h-full md:w-64" src="{{ tool.image.url }}" alt="Image of {{ tool.name }}">
+        </div>
+
+        <!-- Details Section -->
+        <div class="p-8 w-full">
+            <div class="flex justify-between items-start">
+                <h1 class="text-3xl font-bold text-gray-900">{{ tool.name }}</h1>
+                {% if tool.availability_status == 'available' %}
+                    <span class="inline-block bg-green-200 text-green-800 text-sm px-3 py-1 rounded-full uppercase font-semibold tracking-wide">Available</span>
+                {% else %}
+                    <span class="inline-block bg-yellow-200 text-yellow-800 text-sm px-3 py-1 rounded-full uppercase font-semibold tracking-wide">On Loan</span>
+                {% endif %}
+            </div>
+
+            <p class="text-sm text-gray-500 mt-2">
+                Posted by <a href="{% url 'start-chat' tool.owner.pk %}" class="font-medium text-blue-600 hover:underline">{{ tool.owner.username }}</a> on {{ tool.posted_time|date:"F d, Y" }}
+            </p>
+
+            <div class="mt-6">
+                <h2 class="text-lg font-semibold text-gray-800">Description</h2>
+                <p class="mt-2 text-gray-600">{{ tool.description|linebreaks }}</p>
+            </div>
+
+            <div class="mt-6 border-t border-gray-200 pt-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <div>
+                        <h3 class="font-semibold text-gray-800">Pickup Address</h3>
+                        <p class="text-gray-600">{{ tool.pickup_address }}</p>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-gray-800">Preferred Pickup Time</h3>
+                        <p class="text-gray-600">{{ tool.preferred_pickup_time }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="mt-8 border-t border-gray-200 pt-6">
+                {% if user.is_authenticated %}
+                    {% if tool.owner == user %}
+                        <!-- Owner's controls -->
+                        <div class="flex space-x-4">
+                            <a href="{% url 'tool-update' tool.pk %}" class="w-full text-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 font-semibold">Edit Listing</a>
+                            <a href="{% url 'tool-delete' tool.pk %}" class="w-full text-center px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 font-semibold">Delete Listing</a>
+                        </div>
+                    {% else %}
+                         <!-- Future "Borrow" button for other users -->
+                        {% if tool.availability_status == 'available' %}
+                            <a href="{% url 'borrow-request-create' tool.pk %}" class="w-full text-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 font-semibold">Request to Borrow</a>
+                        {% else %}
+                             <button class="w-full px-4 py-2 bg-gray-400 text-white rounded-md font-semibold cursor-not-allowed" disabled>Currently Unavailable</button>
+                        {% endif %}
+
+
+                    {% endif %}
+                {% else %}
+                    <!-- Prompt for non-logged-in users -->
+                    <p class="text-center text-gray-600">
+                        Please <a href="{% url 'account_login' %}?next={{ request.path }}" class="font-medium text-blue-600 hover:underline">log in</a> or <a href="{% url 'account_signup' %}?next={{ request.path }}" class="font-medium text-blue-600 hover:underline">sign up</a> to borrow this tool.
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

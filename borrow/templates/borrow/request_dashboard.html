@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block title %}My Requests - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="space-y-12">
+    <!-- INCOMING REQUESTS on my tools -->
+    <div>
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">Incoming Requests for My Tools</h2>
+        {% with requests=incoming_tool_requests %}
+            {% if requests %}
+                <div class="bg-white shadow rounded-lg">
+                    <ul class="divide-y divide-gray-200">
+                        {% for req in requests %}
+                        <li class="p-4 flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-blue-600">
+                                    <a href="{{ req.tool.get_absolute_url }}">{{ req.tool.name }}</a>
+                                </p>
+                                <p class="text-sm text-gray-600">
+                                    Requested by: <span class="font-semibold">{{ req.borrower.username }}</span>
+                                </p>
+                                <p class="text-xs text-gray-500">
+                                    Dates: {{ req.start_date|date:"M d, Y" }} to {{ req.end_date|date:"M d, Y" }}
+                                </p>
+                            </div>
+                            <!-- Actions for Pending Requests -->
+                            {% if req.status == 'pending' %}
+                            <div class="flex space-x-2">
+                                <form action="{% url 'request-update-status' req.pk %}" method="post">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="approve">
+                                    <button type="submit" class="px-3 py-1 text-xs font-medium text-white bg-green-600 rounded-md hover:bg-green-700">Approve</button>
+                                </form>
+                                <form action="{% url 'request-update-status' req.pk %}" method="post">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="deny">
+                                    <button type="submit" class="px-3 py-1 text-xs font-medium text-white bg-red-600 rounded-md hover:bg-red-700">Deny</button>
+                                </form>
+                            </div>
+                            {% else %}
+                            <div>
+                                <span class="px-3 py-1 text-xs font-medium rounded-full
+                                    {% if req.status == 'approved' %} bg-green-100 text-green-800 {% endif %}
+                                    {% if req.status == 'denied' %} bg-red-100 text-red-800 {% endif %}
+                                    {% if req.status == 'completed' %} bg-gray-100 text-gray-800 {% endif %}">
+                                    {{ req.get_status_display }}
+                                </span>
+                            </div>
+                            {% endif %}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% else %}
+                <p class="text-gray-500">You have no incoming requests for your tools.</p>
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- MY BORROW REQUESTS -->
+    <div>
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">My Borrowing Requests</h2>
+        {% with requests=my_borrow_requests %}
+            {% if requests %}
+            <div class="bg-white shadow rounded-lg">
+                <ul class="divide-y divide-gray-200">
+                    {% for req in requests %}
+                    <li class="p-4 flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-blue-600">
+                                <a href="{{ req.tool.get_absolute_url }}">{{ req.tool.name }}</a>
+                            </p>
+                            <p class="text-sm text-gray-600">
+                                Owner: <span class="font-semibold">{{ req.tool.owner.username }}</span>
+                            </p>
+                            <p class="text-xs text-gray-500">
+                                Requested on: {{ req.request_date|date:"M d, Y" }}
+                            </p>
+                        </div>
+                        <div>
+                            <span class="px-3 py-1 text-xs font-medium rounded-full
+                                {% if req.status == 'pending' %} bg-yellow-100 text-yellow-800 {% endif %}
+                                {% if req.status == 'approved' %} bg-green-100 text-green-800 {% endif %}
+                                {% if req.status == 'denied' %} bg-red-100 text-red-800 {% endif %}
+                                {% if req.status == 'completed' %} bg-gray-100 text-gray-800 {% endif %}">
+                                {{ req.get_status_display }}
+                            </span>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% else %}
+                <p class="text-gray-500">You have not requested any tools yet.</p>
+            {% endif %}
+        {% endwith %}
+    </div>
+</div>
+{% endblock %}
