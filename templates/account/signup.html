@@ -1,361 +1,551 @@
-{% extends "base.html" %}
-
-{% block title %}Sign Up - {{ block.super }}{% endblock %}
-
-{% block content %}
+{% extends "base.html" %} {% load socialaccount %} 
+{% block title %}Sign Up - {{block.super }} {%endblock %} {% block content %}
 <style>
+  body {
+    background-color: #f0f2f5;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+      "Helvetica Neue", Arial, sans-serif;
+    overflow-x: hidden;
+  }
 
-    body {
-        background-color: #f0f2f5;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-        overflow-x: hidden; 
+  @keyframes slideInFromLeft {
+    from {
+      transform: translateX(-100%);
+      opacity: 0;
     }
-    
-    
-    @keyframes slideInFromLeft {
-        from { transform: translateX(-100%); opacity: 0; }
-        to { transform: translateX(0); opacity: 1; }
+    to {
+      transform: translateX(0);
+      opacity: 1;
     }
-    @keyframes slideInFromRight {
-        from { transform: translateX(100%); opacity: 0; }
-        to { transform: translateX(0); opacity: 1; }
+  }
+  @keyframes slideInFromRight {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
     }
-    @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
+    to {
+      transform: translateX(0);
+      opacity: 1;
     }
-    @keyframes animatedGradient {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
+  }
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
     }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes animatedGradient {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
 
-    .signup-container {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 100vh;
-        padding: 1.5rem;
-    }
+  .signup-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 1.5rem;
+  }
 
-    .signup-card {
-        display: flex;
-        width: 100%;
-        max-width: 960px;
-        background: #ffffff;
-        border-radius: 1.5rem;
-        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
-        overflow: hidden;
-    }
+  .signup-card {
+    display: flex;
+    width: 100%;
+    max-width: 960px;
+    background: #ffffff;
+    border-radius: 1.5rem;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+  }
 
+  .branding-panel {
+    width: 45%;
+    color: #ffffff;
+    padding: 4rem 2.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: left;
+    background: linear-gradient(145deg, #98ff98, #1a3a3a, #ff8c00);
+    background-size: 200% 200%;
+    animation: animatedGradient 15s ease infinite,
+      slideInFromLeft 0.8s ease-out forwards;
+  }
+  .branding-panel h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+    animation: fadeIn 1s ease-out 0.5s backwards;
+  }
+  .branding-panel p {
+    font-size: 1.1rem;
+    opacity: 0.8;
+    animation: fadeIn 1s ease-out 0.8s backwards;
+  }
+
+  .form-panel {
+    width: 55%;
+    padding: 3rem 4rem;
+    animation: slideInFromRight 0.8s ease-out forwards;
+  }
+  .form-panel h2 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 2rem;
+  }
+
+  .form-group {
+    position: relative;
+    margin-bottom: 2rem;
+  }
+
+  .form-group input {
+    width: 100%;
+    border: none;
+    border-bottom: 2px solid #d2d6db;
+    padding: 10px 40px 10px 35px;
+    font-size: 1rem;
+    background-color: transparent;
+    transition: border-color 0.3s ease;
+    color: #333;
+  }
+
+  .form-group input:focus {
+    outline: none;
+    border-color: #ff8c00;
+  }
+
+  .form-group label {
+    position: absolute;
+    top: 10px;
+    left: 35px;
+    color: #6c757d;
+    font-size: 1rem;
+    pointer-events: none;
+    transition: all 0.3s ease;
+  }
+
+  .form-group input:focus ~ label,
+  .form-group input:not(:placeholder-shown) ~ label {
+    top: -16px;
+    left: 35px;
+    font-size: 0.75rem;
+    color: #ff8c00;
+  }
+
+  .form-group input::placeholder {
+    color: transparent;
+  }
+
+  .form-group .icon {
+    position: absolute;
+    top: 8px;
+    left: 0;
+    width: 20px;
+    height: 20px;
+    color: #adb5bd;
+    transition: color 0.3s ease;
+  }
+  .form-group input:focus ~ .icon {
+    color: #ff8c00;
+  }
+
+  .password-toggle {
+    position: absolute;
+    top: 8px;
+    right: 5px;
+    cursor: pointer;
+    color: #adb5bd;
+    width: 20px;
+    height: 20px;
+  }
+  .password-toggle:hover {
+    color: #333;
+  }
+  .password-toggle .eye-open {
+    display: block;
+  }
+  .password-toggle .eye-closed {
+    display: none;
+  }
+
+  .password-strength-meter {
+    height: 5px;
+    width: 100%;
+    background-color: #e9ecef;
+    border-radius: 5px;
+    margin-top: 8px;
+  }
+  .password-strength-meter-fill {
+    height: 100%;
+    width: 0;
+    background-color: #dc3545;
+    border-radius: 5px;
+    transition: width 0.3s ease, background-color 0.3s ease;
+  }
+
+  .submit-btn {
+    width: 100%;
+    padding: 0.85rem;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #fff;
+    background: linear-gradient(90deg, #ff8c00, #ffa500);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 140, 0, 0.4);
+    position: relative;
+  }
+  .submit-btn:hover:not(:disabled) {
+    transform: translateY(-3px);
+    box-shadow: 0 7px 20px rgba(255, 140, 0, 0.6);
+  }
+  .submit-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+  }
+
+  .loader {
+    pointer-events: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    border-top-color: #fff;
+    animation: spin 1s linear infinite;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -10px;
+    margin-left: -10px;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .submit-btn.loading .loader {
+    opacity: 1;
+  }
+  .submit-btn.loading .btn-text {
+    visibility: hidden;
+  }
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .login-link-container {
+    text-align: center;
+    margin-top: 1.5rem;
+    color: #6c757d;
+  }
+  .login-link {
+    color: #ff8c00;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+  .login-link:hover {
+    color: #e67e00;
+  }
+
+  .error-message {
+    color: #dc3545;
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding-top: 4px;
+  }
+
+  @media (max-width: 992px) {
     .branding-panel {
-        width: 45%;
-        color: #ffffff;
-        padding: 4rem 2.5rem;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        text-align: left;
-        background: linear-gradient(145deg, #98FF98, #1A3A3A, #ff8c00);
-        background-size: 200% 200%;
-        animation: animatedGradient 15s ease infinite, slideInFromLeft 0.8s ease-out forwards;
+      display: none;
     }
-    .branding-panel h1 {
-        font-size: 2.5rem;
-        font-weight: 700;
-        margin-bottom: 1rem;
-        line-height: 1.2;
-        animation: fadeIn 1s ease-out 0.5s backwards;
-    }
-    .branding-panel p {
-        font-size: 1.1rem;
-        opacity: 0.8;
-        animation: fadeIn 1s ease-out 0.8s backwards;
-    }
-
     .form-panel {
-        width: 55%;
-        padding: 3rem 4rem;
-        animation: slideInFromRight 0.8s ease-out forwards;
+      width: 100%;
+      padding: 2.5rem;
+      animation: fadeIn 0.8s ease-out forwards;
     }
-    .form-panel h2 {
-        font-size: 1.8rem;
-        font-weight: 600;
-        color: #333;
-        margin-bottom: 2rem;
-    }
-
-    .form-group {
-        position: relative;
-        margin-bottom: 2rem; 
-    }
-
-    .form-group input {
-        width: 100%;
-        border: none;
-        border-bottom: 2px solid #d2d6db;
-        padding: 10px 40px 10px 35px; 
-        font-size: 1rem;
-        background-color: transparent;
-        transition: border-color 0.3s ease;
-        color: #333;
-    }
-
-    .form-group input:focus {
-        outline: none;
-        border-color: #ff8c00;
-    }
-
-    .form-group label {
-        position: absolute;
-        top: 10px;
-        left: 35px;
-        color: #6c757d;
-        font-size: 1rem;
-        pointer-events: none;
-        transition: all 0.3s ease;
-    }
-
-    .form-group input:focus ~ label,
-    .form-group input:not(:placeholder-shown) ~ label {
-        top: -16px;
-        left: 35px;
-        font-size: 0.75rem;
-        color: #ff8c00;
-    }
-
-    .form-group input::placeholder { color: transparent; }
-
-    .form-group .icon {
-        position: absolute;
-        top: 8px;
-        left: 0;
-        width: 20px;
-        height: 20px;
-        color: #adb5bd;
-        transition: color 0.3s ease;
-    }
-    .form-group input:focus ~ .icon { color: #ff8c00; }
-    
-    .password-toggle {
-        position: absolute;
-        top: 8px;
-        right: 5px;
-        cursor: pointer;
-        color: #adb5bd;
-        width: 20px;
-        height: 20px;
-    }
-     .password-toggle:hover { color: #333; }
-    .password-toggle .eye-open { display: block; }
-    .password-toggle .eye-closed { display: none; }
-
-    .password-strength-meter {
-        height: 5px;
-        width: 100%;
-        background-color: #e9ecef;
-        border-radius: 5px;
-        margin-top: 8px;
-    }
-    .password-strength-meter-fill {
-        height: 100%;
-        width: 0;
-        background-color: #dc3545; 
-        border-radius: 5px;
-        transition: width 0.3s ease, background-color 0.3s ease;
-    }
-
-
-    .submit-btn {
-        width: 100%;
-        padding: 0.85rem;
-        border: none;
-        border-radius: 0.5rem;
-        font-size: 1rem;
-        font-weight: 600;
-        color: #fff;
-        background: linear-gradient(90deg, #ff8c00, #ffa500);
-        cursor: pointer;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(255, 140, 0, 0.4);
-        position: relative;
-    }
-    .submit-btn:hover:not(:disabled) {
-        transform: translateY(-3px);
-        box-shadow: 0 7px 20px rgba(255, 140, 0, 0.6);
-    }
-    .submit-btn:disabled {
-        background: #ccc;
-        cursor: not-allowed;
-    }
-    
-    .loader {
-        pointer-events: none;
-        width: 20px;
-        height: 20px;
-        border-radius: 50%;
-        border: 2px solid rgba(255,255,255,0.5);
-        border-top-color: #fff;
-        animation: spin 1s linear infinite;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        margin-top: -10px;
-        margin-left: -10px;
-        opacity: 0;
-        transition: opacity 0.3s;
-    }
-    .submit-btn.loading .loader { opacity: 1; }
-    .submit-btn.loading .btn-text { visibility: hidden; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    .login-link-container {
-        text-align: center;
-        margin-top: 1.5rem;
-        color: #6c757d;
-    }
-    .login-link {
-        color: #ff8c00;
-        font-weight: 600;
-        text-decoration: none;
-        transition: color 0.3s ease;
-    }
-    .login-link:hover { color: #e67e00; }
-    
-    .error-message {
-      color: #dc3545;
-      font-size: 0.8rem;
-      font-weight: 500;
-      padding-top: 4px;
-    }
-
-    @media (max-width: 992px) {
-        .branding-panel { display: none; }
-        .form-panel { width: 100%; padding: 2.5rem; animation: fadeIn 0.8s ease-out forwards; }
-    }
+  }
 </style>
 
 <div class="signup-container">
-    <div class="signup-card">
-        <div class="branding-panel">
-            <h1>Join Our Community</h1>
-            <p>Discover a new way to get your home maintainance done by yourself</p>
-        </div>
-        <div class="form-panel">
-            <h2>Create Account</h2>
-            <form method="POST" action="{% url 'account_signup' %}" id="signup-form">
-                {% csrf_token %}
-                
-                <div class="form-group">
-                    <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" /></svg>
-                    {{ form.email }}
-                    <label for="id_email">E-mail</label>
-                    {% if form.email.errors %}<p class="error-message">{{ form.email.errors.as_text|striptags }}</p>{% endif %}
-                </div>
-                <div class="form-group">
-                    <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
-                    {{ form.username }}
-                    {% if form.username.errors %}<p class="error-message">{{ form.username.errors.as_text|striptags }}</p>{% endif %}
-                </div>
-                <div class="form-group">
-                     <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
-                    {{ form.password1 }}
-                    <label for="id_password1">Password</label>
-                    <div class="password-toggle" data-target="id_password1">
-                        <svg class="eye-open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
-                        <svg class="eye-closed" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7 .852-2.705 2.875-5.065 5.542-6.175M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c1.208 0 2.37.193 3.44.542m-2.06 5.856A3.002 3.002 0 0012 15a3 3 0 100-6 3.002 3.002 0 00-1.62.458m-.9 3.642L6.12 15.12M18.88 8.88l-1.62 1.62" /></svg>
-                    </div>
-                    <div class="password-strength-meter"><div id="password-strength-fill" class="password-strength-meter-fill"></div></div>
-                    {% if form.password1.errors %}<p class="error-message">{{ form.password1.errors.as_text|striptags }}</p>{% endif %}
-                </div>
-                <div class="form-group">
-                     <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                    {{ form.password2 }}
-                    <label for="id_password2">Confirm Password</label>
-                     <div class="password-toggle" data-target="id_password2">
-                        <svg class="eye-open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
-                        <svg class="eye-closed" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7 .852-2.705 2.875-5.065 5.542-6.175M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c1.208 0 2.37.193 3.44.542m-2.06 5.856A3.002 3.002 0 0012 15a3 3 0 100-6 3.002 3.002 0 00-1.62.458m-.9 3.642L6.12 15.12M18.88 8.88l-1.62 1.62" /></svg>
-                    </div>
-                    {% if form.password2.errors %}<p class="error-message">{{ form.password2.errors.as_text|striptags }}</p>{% endif %}
-                </div>
-
-                {{ redirect_field }}
-
-                <button type="submit" class="submit-btn">
-                    <span class="btn-text">Sign Up</span>
-                    <div class="loader"></div>
-                </button>
-
-                <p class="login-link-container">
-                    Already have an account?
-                    <a href="{% url 'account_login' %}" class="login-link">
-                        Log In
-                    </a>
-                </p>
-            </form>
-        </div>
+  <div class="signup-card">
+    <div class="branding-panel">
+      <h1>Join Our Community</h1>
+      <p>Reduce waste, save money, and build a stronger community.</p>
     </div>
+    <div class="form-panel">
+      <h2>Create Account</h2>
+      <form method="POST" action="{% url 'account_signup' %}" id="signup-form">
+        {% csrf_token %}
+
+        <div class="form-group">
+          <svg
+            class="icon"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"
+            />
+          </svg>
+          {{ form.email }}
+          <label for="id_email">E-mail</label>
+          {% if form.email.errors %}
+          <p class="error-message">{{ form.email.errors.as_text|striptags }}</p>
+          {% endif %}
+        </div>
+        <div class="form-group">
+          <svg
+            class="icon"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+            />
+          </svg>
+          {{ form.username }}
+          <label for="id_username">Username</label>
+          {% if form.username.errors %}
+          <p class="error-message">
+            {{ form.username.errors.as_text|striptags }}
+          </p>
+          {% endif %}
+        </div>
+        <div class="form-group">
+          <svg
+            class="icon"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+            />
+          </svg>
+          {{ form.password1 }}
+          <label for="id_password1">Password</label>
+          <div class="password-toggle" data-target="id_password1">
+            <svg
+              class="eye-open"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+              />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+              />
+            </svg>
+            <svg
+              class="eye-closed"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7 .852-2.705 2.875-5.065 5.542-6.175M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+              />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M2.458 12C3.732 7.943 7.523 5 12 5c1.208 0 2.37.193 3.44.542m-2.06 5.856A3.002 3.002 0 0012 15a3 3 0 100-6 3.002 3.002 0 00-1.62.458m-.9 3.642L6.12 15.12M18.88 8.88l-1.62 1.62"
+              />
+            </svg>
+          </div>
+          <div class="password-strength-meter">
+            <div
+              id="password-strength-fill"
+              class="password-strength-meter-fill"
+            ></div>
+          </div>
+          {% if form.password1.errors %}
+          <p class="error-message">
+            {{ form.password1.errors.as_text|striptags }}
+          </p>
+          {% endif %}
+        </div>
+        <div class="form-group">
+          <svg
+            class="icon"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          {{ form.password2 }}
+          <label for="id_password2">Confirm Password</label>
+          <div class="password-toggle" data-target="id_password2">
+            <svg
+              class="eye-open"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+              />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+              />
+            </svg>
+            <svg
+              class="eye-closed"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7 .852-2.705 2.875-5.065 5.542-6.175M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+              />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M2.458 12C3.732 7.943 7.523 5 12 5c1.208 0 2.37.193 3.44.542m-2.06 5.856A3.002 3.002 0 0012 15a3 3 0 100-6 3.002 3.002 0 00-1.62.458m-.9 3.642L6.12 15.12M18.88 8.88l-1.62 1.62"
+              />
+            </svg>
+          </div>
+          {% if form.password2.errors %}
+          <p class="error-message">
+            {{ form.password2.errors.as_text|striptags }}
+          </p>
+          {% endif %}
+        </div>
+
+        {{ redirect_field }}
+
+        <button type="submit" class="submit-btn">
+          <span class="btn-text">Sign Up</span>
+          <div class="loader"></div>
+        </button>
+
+        <p class="login-link-container">
+          Already have an account?
+          <a href="{% url 'account_login' %}" class="login-link"> Log In </a>
+        </p>
+      </form>
+      {% include "account/partials/social_login_buttons.html" %}
+    </div>
+  </div>
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        
-        document.querySelectorAll('.form-group input').forEach(input => {
-            input.setAttribute('placeholder', ' ');
-        });
-
-        const signupForm = document.getElementById('signup-form');
-        const submitButton = signupForm.querySelector('.submit-btn');
-
-        signupForm.addEventListener('submit', function() {
-            submitButton.classList.add('loading');
-            submitButton.disabled = true;
-        });
-
-        // Password visibility toggle logic
-        document.querySelectorAll('.password-toggle').forEach(toggle => {
-            toggle.addEventListener('click', function() {
-                const targetId = this.dataset.target;
-                const passwordInput = document.getElementById(targetId);
-                const eyeOpen = this.querySelector('.eye-open');
-                const eyeClosed = this.querySelector('.eye-closed');
-
-                if (passwordInput.type === 'password') {
-                    passwordInput.type = 'text';
-                    eyeOpen.style.display = 'none';
-                    eyeClosed.style.display = 'block';
-                } else {
-                    passwordInput.type = 'password';
-                    eyeOpen.style.display = 'block';
-                    eyeClosed.style.display = 'none';
-                }
-            });
-        });
-
-        const passwordInput = document.getElementById('id_password1');
-        const strengthFill = document.getElementById('password-strength-fill');
-        
-        passwordInput.addEventListener('input', function() {
-            const password = this.value;
-            let score = 0;
-            
-            if (password.length >= 8) score++;
-            if (/[A-Z]/.test(password)) score++;
-            if (/[a-z]/.test(password)) score++;
-            if (/[0-9]/.test(password)) score++;
-            if (/[^A-Za-z0-9]/.test(password)) score++;
-
-            let width = (score / 5) * 100;
-            let color = '#dc3545';
-            if (score >= 4) {
-                color = '#28a745'; 
-            } else if (score >= 2) {
-                color = '#ffc107'; 
-            }
-            
-            strengthFill.style.width = width + '%';
-            strengthFill.style.backgroundColor = color;
-        });
+  document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".form-group input").forEach((input) => {
+      input.setAttribute("placeholder", " ");
     });
+
+    const signupForm = document.getElementById("signup-form");
+    const submitButton = signupForm.querySelector(".submit-btn");
+
+    signupForm.addEventListener("submit", function () {
+      submitButton.classList.add("loading");
+      submitButton.disabled = true;
+    });
+
+    // Password visibility toggle logic
+    document.querySelectorAll(".password-toggle").forEach((toggle) => {
+      toggle.addEventListener("click", function () {
+        const targetId = this.dataset.target;
+        const passwordInput = document.getElementById(targetId);
+        const eyeOpen = this.querySelector(".eye-open");
+        const eyeClosed = this.querySelector(".eye-closed");
+
+        if (passwordInput.type === "password") {
+          passwordInput.type = "text";
+          eyeOpen.style.display = "none";
+          eyeClosed.style.display = "block";
+        } else {
+          passwordInput.type = "password";
+          eyeOpen.style.display = "block";
+          eyeClosed.style.display = "none";
+        }
+      });
+    });
+
+    const passwordInput = document.getElementById("id_password1");
+    const strengthFill = document.getElementById("password-strength-fill");
+
+    passwordInput.addEventListener("input", function () {
+      const password = this.value;
+      let score = 0;
+
+      if (password.length >= 8) score++;
+      if (/[A-Z]/.test(password)) score++;
+      if (/[a-z]/.test(password)) score++;
+      if (/[0-9]/.test(password)) score++;
+      if (/[^A-Za-z0-9]/.test(password)) score++;
+
+      let width = (score / 5) * 100;
+      let color = "#dc3545";
+      if (score >= 4) {
+        color = "#28a745";
+      } else if (score >= 2) {
+        color = "#ffc107";
+      }
+
+      strengthFill.style.width = width + "%";
+      strengthFill.style.backgroundColor = color;
+    });
+  });
 </script>
 {% endblock %}

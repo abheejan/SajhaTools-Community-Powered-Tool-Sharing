@@ -1,6 +1,6 @@
 import os
 import environ
-
+from decouple import config
 from pathlib import Path
 
 
@@ -30,12 +30,14 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
+    "django.contrib.sites",
     "django.contrib.staticfiles",
 
     # Third-part Apps
     'allauth',
     'allauth.account',
     'allauth.socialaccount', # Used for google/facebook login
+    'allauth.socialaccount.providers.google',
     'crispy_forms',
     'crispy_tailwind',
     
@@ -47,7 +49,7 @@ INSTALLED_APPS = [
     'messaging',
 ]
 
-SITE_ID = 1 # Required for allauth
+SITE_ID=2 # Required for allauth
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
@@ -59,16 +61,33 @@ LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
 # User is identified by their email address
-ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
 ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_USERNAME_REQUIRED = False 
 ACCOUNT_UNIQUE_EMAIL = True
+
+ACCOUNT_USERNAME_REQUIRED = True
+ACCOUNT_USERNAME_MIN_LENGTH = 3 
+ACCOUNT_USER_MODEL_USERNAME_FIELD = 'username'
+
 
 # We can turn this to 'mandatory' in production
 ACCOUNT_EMAIL_VERIFICATION = 'optional'
 
 # For development, let's have emails print to the console
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        # The SCOPE defines what data we are asking from the user
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        }
+    }
+}
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
