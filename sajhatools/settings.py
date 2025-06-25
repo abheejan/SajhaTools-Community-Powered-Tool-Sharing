@@ -194,3 +194,6 @@ AUTH_USER_MODEL = 'users.CustomUser'
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "tailwind"
 CRISPY_TEMPLATE_PACK = "tailwind"
+
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+SESSION_COOKIE_AGE = 60 * 60 * 24 * 3   # Cookie will expire on 3 days
