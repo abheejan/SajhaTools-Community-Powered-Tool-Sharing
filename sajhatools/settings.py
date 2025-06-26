@@ -1,6 +1,5 @@
 import os
 import environ
-from decouple import config
 from pathlib import Path
 
 
@@ -8,12 +7,17 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Initialize environment variables
+env = environ.Env(
+    DEBUG=(bool, False)
+)
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-339o_-vj^+s58+g@05(3#4m#4qv##ph*-(++^+seb13zjk7gw8"
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -70,11 +74,17 @@ ACCOUNT_USERNAME_MIN_LENGTH = 3
 ACCOUNT_USER_MODEL_USERNAME_FIELD = 'username'
 
 
-# We can turn this to 'mandatory' in production
-ACCOUNT_EMAIL_VERIFICATION = 'optional'
+
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 
 # For development, let's have emails print to the console
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+EMAIL_BACKEND = "sendgrid_backend.SendgridBackend"
+SENDGRID_API_KEY = env('SENDGRID_API_KEY')
+SENDGRID_SANDBOX_MODE_IN_DEBUG = False
+
+DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')
 
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
@@ -134,14 +144,7 @@ CHANNEL_LAYERS = {
 }
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'sajhatools_db',
-        'USER': 'postgres',
-        'PASSWORD': 'root',
-        'HOST': 'localhost',
-        'PORT': '5432'
-    }
+    'default': env.db(),
 }
 
 
