@@ -1,0 +1,58 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# Django-specific
+*.log
+*.pot
+*.pyc
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Media and static files (if generated or collected)
+/media/
+/staticfiles/
+/static_root/
+/media_root/
+
+# Virtual environment
+venv/
+env/
+ENV/
+.venv/
+.env/
+*.env
+
+# VS Code / IDE / OS
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Migrations (optional — only if you want to ignore compiled migration files)
+# But usually you DO want these in version control.
+# */migrations/*.py
+*/migrations/__pycache__/
+
+# Node modules (if using with React/Vue frontend)
+node_modules/
+
+# Coverage & testing
+htmlcov/
+.coverage
+.tox/
+nosetests.xml
+coverage.xml
+*.cover
+
+# Docker
+*.pid
+
+# Other
+*.bak
+*.tmp
