@@ -1,27 +1,154 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Welcome - {{ block.super }}{% endblock %}
 
 {% block content %}
-<div class="text-center">
-    <h1 class="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl md:text-6xl">
-        <span class="block">Welcome to</span>
-        <span class="block text-blue-600">SajhaTools</span>
-    </h1>
-    <p class="mt-3 max-w-md mx-auto text-base text-gray-500 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
-        The best place for neighbors to borrow and lend tools. Reduce waste, save money, and build a stronger community.
-    </p>
-    <div class="mt-5 max-w-md mx-auto sm:flex sm:justify-center md:mt-8">
-        <div class="rounded-md shadow">
-            <a href="{% url 'tool-list' %}" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 md:py-4 md:text-lg md:px-10">
+<style>
+    
+    .hero-section {
+        position: relative; 
+        background-color: #f0f2f5;
+        padding: 6rem 0;
+        border-radius: 1.5rem;
+        text-align: center;
+        overflow: hidden; 
+    }
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: url("{% static 'images/bg.webp' %}"); 
+        background-size: cover;
+        background-position: center;
+        opacity: 0.05; 
+        z-index: 1;
+    }
+    .hero-content {
+        position: relative; 
+        z-index: 2;
+    }
+    .hero-title {
+        font-size: 3.5rem;
+        font-weight: 800;
+        line-height: 1.2;
+        color: #2d3748;
+    }
+    .hero-subtitle {
+        color: #4a5568;
+    }
+    .primary-action-btn-hero {
+        display: inline-block;
+        padding: 0.85rem 2rem;
+        border-radius: 0.5rem;
+        font-size: 1rem;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+        color: #fff;
+        background: linear-gradient(90deg, #ff8c00, #ffa500);
+        box-shadow: 0 4px 20px rgba(255, 140, 0, 0.4);
+    }
+    .primary-action-btn-hero:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 7px 25px rgba(255, 140, 0, 0.6);
+    }
+    .secondary-action-btn {
+        display: inline-block;
+        padding: 0.85rem 2rem;
+        border: 2px solid #d1d5db;
+        border-radius: 0.5rem;
+        font-size: 1rem;
+        font-weight: 600;
+        color: #4a5568;
+        background-color: #fff;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
+    .secondary-action-btn:hover {
+        transform: translateY(-3px);
+        border-color: #ff8c00;
+        color: #ff8c00;
+        box-shadow: 0 7px 15px rgba(0,0,0,0.08);
+    }
+    
+    
+    .feature-icon {
+        background: linear-gradient(135deg, #ff8c00, #ffa500);
+        color: white;
+        width: 64px;
+        height: 64px;
+        border-radius: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        box-shadow: 0 10px 20px rgba(255, 140, 0, 0.2);
+    }
+</style>
+
+
+<div class="hero-section mb-24">
+    <div class="hero-content max-w-4xl mx-auto">
+        <h1 class="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl md:text-6xl hero-title">
+            <span class="block">Welcome to</span>
+            <span class="block text-orange-600" style="color: #ff8c00;">SajhaTools</span>
+        </h1>
+        <p class="mt-3 max-w-md mx-auto text-base text-gray-500 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl hero-subtitle">
+            The best place for neighbors to borrow and lend tools. Reduce waste, save money, and build a stronger community.
+        </p>
+        <div class="mt-8 flex justify-center gap-4">
+            <a href="{% url 'tool-list' %}" class="primary-action-btn-hero">
                 Browse Tools
             </a>
-        </div>
-        <div class="mt-3 rounded-md shadow sm:mt-0 sm:ml-3">
-            <a href="{% url 'tool-create' %}" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-blue-600 bg-white hover:bg-gray-50 md:py-4 md:text-lg md:px-10">
+            <a href="{% url 'tool-create' %}" class="secondary-action-btn">
                 Post an Item
             </a>
         </div>
     </div>
 </div>
+
+
+
+<div class="py-16 bg-white rounded-2xl mb-24">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <h2 class="text-base font-semibold text-orange-600 tracking-wide uppercase" style="color: #ff8c00;">Why SajhaTools?</h2>
+            <p class="mt-2 text-3xl font-extrabold text-gray-900 tracking-tight sm:text-4xl">A Better Way to Get Things Done</p>
+        </div>
+        <div class="mt-12">
+            <div class="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-3">
+                <div class="pt-6 text-center">
+                    <div class="feature-icon">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900">Borrow Anything</h3>
+                    <p class="mt-4 text-base text-gray-500">Need a ladder for an hour? A power drill for the weekend? Find what you need from trusted neighbors nearby.</p>
+                </div>
+                <div class="pt-6 text-center">
+                    <div class="feature-icon">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v.01"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M12 6h.01M12 2a10 10 0 100 20 10 10 0 000-20z"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900">Save Money</h3>
+                    <p class="mt-4 text-base text-gray-500">Don't buy expensive tools you'll only use once. Borrowing saves you money and reduces clutter in your home.</p>
+                </div>
+                <div class="pt-6 text-center">
+                    <div class="feature-icon">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900">Build Community</h3>
+                    <p class="mt-4 text-base text-gray-500">Every tool shared is a new connection made. Get to know your neighbors and build a stronger, more resilient community.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
