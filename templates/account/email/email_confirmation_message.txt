@@ -1,0 +1,11 @@
+Hi {{ user.username }},
+
+Welcome to CommunityToolShare!
+
+To complete your signup and activate your account, please click the link below:
+{{ activate_url }}
+
+If you did not sign up for an account, please ignore this email.
+
+Thanks,
+The CommunityToolShare Team

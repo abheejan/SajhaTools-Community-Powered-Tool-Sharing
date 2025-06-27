@@ -1,6 +1,5 @@
 import os
 import environ
-
 from pathlib import Path
 
 
@@ -8,12 +7,17 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Initialize environment variables
+env = environ.Env(
+    DEBUG=(bool, False)
+)
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-339o_-vj^+s58+g@05(3#4m#4qv##ph*-(++^+seb13zjk7gw8"
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -30,12 +34,14 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
+    "django.contrib.sites",
     "django.contrib.staticfiles",
 
     # Third-part Apps
     'allauth',
     'allauth.account',
     'allauth.socialaccount', # Used for google/facebook login
+    'allauth.socialaccount.providers.google',
     'crispy_forms',
     'crispy_tailwind',
     
@@ -47,7 +53,7 @@ INSTALLED_APPS = [
     'messaging',
 ]
 
-SITE_ID = 1 # Required for allauth
+SITE_ID=2 # Required for allauth
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
@@ -59,16 +65,39 @@ LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
 # User is identified by their email address
-ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
 ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_USERNAME_REQUIRED = False 
 ACCOUNT_UNIQUE_EMAIL = True
 
-# We can turn this to 'mandatory' in production
-ACCOUNT_EMAIL_VERIFICATION = 'optional'
+ACCOUNT_USERNAME_REQUIRED = True
+ACCOUNT_USERNAME_MIN_LENGTH = 3 
+ACCOUNT_USER_MODEL_USERNAME_FIELD = 'username'
+
+
+
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 
 # For development, let's have emails print to the console
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+EMAIL_BACKEND = "sendgrid_backend.SendgridBackend"
+SENDGRID_API_KEY = env('SENDGRID_API_KEY')
+SENDGRID_SANDBOX_MODE_IN_DEBUG = False
+
+DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        # The SCOPE defines what data we are asking from the user
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        }
+    }
+}
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -115,14 +144,7 @@ CHANNEL_LAYERS = {
 }
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'sajhatools_db',
-        'USER': 'postgres',
-        'PASSWORD': 'root',
-        'HOST': 'localhost',
-        'PORT': '5432'
-    }
+    'default': env.db(),
 }
 
 
@@ -175,3 +197,6 @@ AUTH_USER_MODEL = 'users.CustomUser'
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "tailwind"
 CRISPY_TEMPLATE_PACK = "tailwind"
+
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+SESSION_COOKIE_AGE = 60 * 60 * 24 * 3   # Cookie will expire on 3 days

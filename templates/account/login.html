@@ -1,7 +1,7 @@
-{% extends "base.html" %} 
-{% load socialaccount %} 
+{% extends "base.html" %}
+{% load socialaccount %}
 
-{% block title %}Log In-{{block.super }} {%endblock%} 
+{% block title %}Log In - {{block.super}} {% endblock %}
 
 {% block content %}
 <style>
@@ -265,6 +265,7 @@
     .branding-panel {
       display: none;
     }
+
     .form-panel {
       width: 100%;
       padding: 2.5rem;
@@ -338,7 +339,7 @@
           <a href="{% url 'account_signup' %}" class="styled-link">Sign Up</a>
         </p>
       </form>
-      <!-- **SENIOR DEV FIX**: Replaced include with custom, styled button -->
+
       <div class="social-separator">OR</div>
         <a href="{% provider_login_url 'google' %}" class="social-login-btn">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" enable-background="new 0 0 48 48">

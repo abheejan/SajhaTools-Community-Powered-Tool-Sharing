@@ -1,7 +1,7 @@
-{% extends "base.html" %} 
-{% load socialaccount %} 
+{% extends "base.html" %}
+{% load socialaccount %}
 
-{% block title %}Sign Up - {{block.super }} {%endblock %} 
+{% block title %}Sign Up - {{block.super }} {%endblock %}
 
 {% block content %}
 <style>
@@ -31,7 +31,7 @@
   .signup-container {
     display: flex;
     justify-content: center;
-    padding: 4rem 1.5rem; 
+    padding: 4rem 1.5rem;
   }
   .signup-card {
     display: flex;
@@ -97,7 +97,6 @@
   .form-group input[type="password"] {
       background-image: none !important;
   }
-
   .form-group input:focus {
     outline: none;
     border-color: #ff8c00;
@@ -266,10 +265,12 @@
         </div>
 
         {{ redirect_field }}
+
         <button type="submit" class="submit-btn">
           <span class="btn-text">Sign Up</span>
           <div class="loader"></div>
         </button>
+
         <p class="login-link-container">
           Already have an account?
           <a href="{% url 'account_login' %}" class="login-link"> Log In </a>
