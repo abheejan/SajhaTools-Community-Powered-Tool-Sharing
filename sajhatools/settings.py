@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'tools',
     'borrow',
     'messaging',
+    'reviews',
 ]
 
 SITE_ID=2 # Required for allauth

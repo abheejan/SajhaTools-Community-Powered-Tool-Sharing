@@ -19,6 +19,8 @@ class Tool(models.Model):
     pickup_address = models.CharField(max_length=255)
     posted_time = models.DateTimeField(auto_now_add=True)
     preferred_pickup_time = models.CharField(max_length=100, help_text="e.g., Weekdays after 5 PM")
+    average_rating = models.FloatField(default=0.0)
+    review_count = models.IntegerField(default=0)
 
     def __str__(self):
         return f"{self.name} owned by {self.owner.username}"

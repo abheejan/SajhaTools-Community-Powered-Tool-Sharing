@@ -10,6 +10,7 @@ from django.views import View
 from .models import BorrowRequest
 from .forms import BorrowRequestForm
 from tools.models import Tool
+from borrow.models import BorrowRequest
 
 class BorrowRequestCreateView(LoginRequiredMixin, CreateView):
     model = BorrowRequest
@@ -69,6 +70,11 @@ class UpdateRequestStatusView(LoginRequiredMixin, View):
         elif action == 'deny':
             borrow_request.status = BorrowRequest.Status.DENIED
             borrow_request.denied_date = timezone.now()
+
+        elif action == 'complete':
+            if borrow_request.status == BorrowRequest.Status.APPROVED:
+                borrow_request.status = BorrowRequest.Status.COMPLETED
+                borrow_request.tool.availability_status = Tool.Availability.AVAILABLE
 
         borrow_request.save()
         

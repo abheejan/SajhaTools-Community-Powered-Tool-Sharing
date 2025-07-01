@@ -11,6 +11,7 @@ urlpatterns = [
     path('tools/', include('tools.urls')),
     path('borrow/', include('borrow.urls')),
     path('messages/', include('messaging.urls')),
+    path('reviews/', include('reviews.urls')),
     
 ]
 

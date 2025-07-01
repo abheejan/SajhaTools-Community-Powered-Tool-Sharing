@@ -38,16 +38,29 @@
                                     <button type="submit" class="px-3 py-1 text-xs font-medium text-white bg-red-600 rounded-md hover:bg-red-700">Deny</button>
                                 </form>
                             </div>
+                            
+                            {# --- MODIFIED SECTION START --- #}
+                            {% elif req.status == 'approved' %}
+                            <div>
+                                {# ADDED: "Mark as Complete" button for tool owner. #}
+                                <form action="{% url 'request-update-status' req.pk %}" method="post">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="complete">
+                                    <button type="submit" class="px-3 py-1 text-xs font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">Mark as Returned</button>
+                                </form>
+                            </div>
                             {% else %}
+                            {# The existing badge logic for Denied and Completed statuses remains. #}
                             <div>
                                 <span class="px-3 py-1 text-xs font-medium rounded-full
-                                    {% if req.status == 'approved' %} bg-green-100 text-green-800 {% endif %}
                                     {% if req.status == 'denied' %} bg-red-100 text-red-800 {% endif %}
                                     {% if req.status == 'completed' %} bg-gray-100 text-gray-800 {% endif %}">
                                     {{ req.get_status_display }}
                                 </span>
                             </div>
                             {% endif %}
+                            {# --- MODIFIED SECTION END --- #}
+                            
                         </li>
                         {% endfor %}
                     </ul>
@@ -79,6 +92,7 @@
                             </p>
                         </div>
                         <div>
+                            {# The existing status badge remains the primary display #}
                             <span class="px-3 py-1 text-xs font-medium rounded-full
                                 {% if req.status == 'pending' %} bg-yellow-100 text-yellow-800 {% endif %}
                                 {% if req.status == 'approved' %} bg-green-100 text-green-800 {% endif %}
@@ -86,6 +100,17 @@
                                 {% if req.status == 'completed' %} bg-gray-100 text-gray-800 {% endif %}">
                                 {{ req.get_status_display }}
                             </span>
+
+                            {# --- ADDED SECTION START --- #}
+                            {# ADDED: "Leave a Review" link for the borrower. #}
+                            {% if req.status == 'completed' %}
+                                {% if not req.review %} {# Only show if a review does not yet exist for this rental. #}
+                                <div class="mt-2 text-right">
+                                     <a href="{% url 'add-review' req.pk %}" class="text-sm font-medium text-blue-600 hover:text-blue-800">Leave a Review</a>
+                                </div>
+                                {% endif %}
+                            {% endif %}
+                            {# --- ADDED SECTION END --- #}
                         </div>
                     </li>
                     {% endfor %}

@@ -7,8 +7,8 @@ class BorrowRequest(models.Model):
         PENDING = 'pending', 'Pending'
         APPROVED = 'approved', 'Approved'
         DENIED = 'denied', 'Denied'
-        CANCELLED = 'cancelled', 'Cancelled' # If the borrower cancels
-        COMPLETED = 'completed', 'Completed' # After the tool is returned
+        CANCELLED = 'cancelled', 'Cancelled'
+        COMPLETED = 'completed', 'Completed'
 
     tool = models.ForeignKey(Tool, on_delete=models.CASCADE, related_name='borrow_requests')
     borrower = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
