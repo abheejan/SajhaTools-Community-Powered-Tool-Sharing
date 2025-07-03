@@ -143,5 +143,46 @@
         </div>
     </footer>
 
+    {% if user.is_authenticated %}
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Find the badge elements in the DOM. Add these IDs to your badge <span> elements.
+        const messageBadge = document.getElementById('message-notification-badge');
+        const requestBadge = document.getElementById('request-notification-badge');
+
+        const notificationSocket = new WebSocket(
+            'ws://' + window.location.host + '/ws/notifications/'
+        );
+
+        notificationSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+
+            if (data.type === 'new_message') {
+                updateBadge(messageBadge);
+            } else if (data.type === 'new_rental_request') {
+                updateBadge(requestBadge);
+            }
+            // Add more conditions here for other notification types like 'new_review_request'
+        };
+
+        notificationSocket.onclose = function(e) {
+            console.error('Notification socket closed unexpectedly');
+        };
+
+        function updateBadge(badgeElement) {
+            if (!badgeElement) return;
+
+            // Make the badge visible
+            badgeElement.style.display = 'inline-block';
+
+            // Get the current count and increment it
+            let currentCount = parseInt(badgeElement.innerText || '0');
+            badgeElement.innerText = currentCount + 1;
+        }
+    });
+    </script>
+    {% endif %}
+
+
 </body>
 </html>

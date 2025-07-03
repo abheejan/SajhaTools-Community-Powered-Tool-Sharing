@@ -1,23 +1,23 @@
 import os
-import django
+from django.core.asgi import get_asgi_application
 from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.auth import AuthMiddlewareStack
-from django.core.asgi import get_asgi_application
 
-# Set the DJANGO_SETTINGS_MODULE environment variable.
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'sajhatools.settings')
-
-# This call must happen before we import our routing.
-django_asgi_app = get_asgi_application()
-
-# Now we can safely import our routing.
+# Import routing from BOTH of your apps
 import messaging.routing
+import core.routing
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'community_tool_share.settings')
+
+# Combine the websocket URL patterns from all apps into one list
+combined_patterns = messaging.routing.websocket_urlpatterns + core.routing.websocket_urlpatterns
 
 application = ProtocolTypeRouter({
-    "http": django_asgi_app,
+    "http": get_asgi_application(),
+    # Update the websocket router to use the combined list of patterns
     "websocket": AuthMiddlewareStack(
         URLRouter(
-            messaging.routing.websocket_urlpatterns
+            combined_patterns
         )
     ),
 })
