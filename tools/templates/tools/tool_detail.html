@@ -41,7 +41,9 @@
             {# --- ADDED SECTION END --- #}
 
             <p class="text-sm text-gray-500 mt-2">
-                Posted by <a href="{% url 'start-chat' tool.owner.pk %}" class="font-medium text-blue-600 hover:underline">{{ tool.owner.username }}</a> on {{ tool.posted_time|date:"F d, Y" }}
+                Posted by <strong> {{ tool.owner.username }} </strong> on {{ tool.posted_time|date:"F d, Y" }} <br>
+                Chat With The Owner <a href="{% url 'start-chat' tool.owner.pk %}" class="font-medium text-blue-600 hover:underline">({{ tool.owner.username }})</a>
+                
             </p>
 
             <div class="mt-6">
