@@ -74,7 +74,7 @@
                     {% else %}
                          <!-- Borrow button for other users -->
                         {% if tool.availability_status == 'available' %}
-                            <a href="{% url 'rental-request-create' tool.pk %}" class="w-full text-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 font-semibold">Request to Borrow</a>
+                            <a href="{% url 'borrow-request-create' tool.pk %}" class="w-full text-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 font-semibold">Request to Borrow</a>
                         {% else %}
                              <button class="w-full px-4 py-2 bg-gray-400 text-white rounded-md font-semibold cursor-not-allowed" disabled>Currently Unavailable</button>
                         {% endif %}
@@ -93,21 +93,21 @@
     {# ADDED: This entire block displays the list of individual reviews for the tool. #}
     <div class="p-8 border-t border-gray-200">
         <h2 class="text-2xl font-bold text-gray-800">Reviews</h2>
-        {% with reviews=tool.rental_requests.all %}
+        {% with reviews=tool.borrow_requests.all %}
             {% if tool.review_count > 0 %}
                 <div class="mt-4 space-y-6">
-                    {# Loop through all rentals associated with this tool and check for a review #}
-                    {% for rental in reviews %}
-                        {% if rental.review %}
+                    {# Loop through all borrows associated with this tool and check for a review #}
+                    {% for borrow in reviews %}
+                        {% if borrow.review %}
                             <div class="p-4 bg-gray-50 rounded-lg border">
                                 <div class="flex items-center mb-2">
                                     <div class="flex items-center">
                                         {# Display the star rating for this specific review #}
-                                        {% star_rating rental.review.rating %}
+                                        {% star_rating borrow.review.rating %}
                                     </div>
-                                    <p class="ml-4 text-sm text-gray-600">by <strong>{{ rental.review.reviewer.username }}</strong> on {{ rental.review.created_at|date:"F d, Y" }}</p>
+                                    <p class="ml-4 text-sm text-gray-600">by <strong>{{ borrow.review.reviewer.username }}</strong> on {{ borrow.review.created_at|date:"F d, Y" }}</p>
                                 </div>
-                                <p class="text-gray-700">{{ rental.review.comment|linebreaks }}</p>
+                                <p class="text-gray-700">{{ borrow.review.comment|linebreaks }}</p>
                             </div>
                         {% endif %}
                     {% endfor %}

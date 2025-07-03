@@ -108,6 +108,11 @@
                                 <div class="mt-2 text-right">
                                      <a href="{% url 'add-review' req.pk %}" class="text-sm font-medium text-blue-600 hover:text-blue-800">Leave a Review</a>
                                 </div>
+                                {% else %}
+                                {# If a review *does* exist, it's good practice to show this. #}
+                                    <div class="mt-2 text-right">
+                                        <p class="text-sm text-gray-500 italic">Review submitted</p>
+                                    </div>
                                 {% endif %}
                             {% endif %}
                             {# --- ADDED SECTION END --- #}

@@ -74,7 +74,9 @@ class UpdateRequestStatusView(LoginRequiredMixin, View):
         elif action == 'complete':
             if borrow_request.status == BorrowRequest.Status.APPROVED:
                 borrow_request.status = BorrowRequest.Status.COMPLETED
-                borrow_request.tool.availability_status = Tool.Availability.AVAILABLE
+                tool = borrow_request.tool
+                tool.availability_status = Tool.Availability.AVAILABLE
+                tool.save()
 
         borrow_request.save()
         
