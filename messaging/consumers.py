@@ -3,6 +3,8 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from .models import Thread, Message
 
+# --- ADDED: Import Django's timezone utility ---
+from django.utils import timezone
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
@@ -30,26 +32,30 @@ class ChatConsumer(AsyncWebsocketConsumer):
             self.channel_name
         )
 
+    # --- MODIFIED: The receive method is corrected here ---
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         message = text_data_json['message']
 
-        # Save message to DB
+        # Save message to DB. This part is correct.
         new_message = await self.save_message(message)
 
-        # Send message to room group
+        # Create a reliable, formatted timestamp *before* sending.
+        formatted_timestamp = timezone.now().strftime('%b %d, %I:%M %p')
+
+        # Send message to room group using our new timestamp.
         await self.channel_layer.group_send(
             self.room_group_name,
             {
                 'type': 'chat_message',
-                'message': new_message.text,
-                'sender': new_message.sender.username,
-                'timestamp': new_message.timestamp.strftime('%b %d, %-I:%M %p')
+                'message': new_message.text, # This is safe to use
+                'sender': new_message.sender.username, # This is safe to use
+                'timestamp': formatted_timestamp # This is the corrected line
             }
         )
 
     async def chat_message(self, event):
-        # Send message to WebSocket
+        # This method is unchanged as it correctly forwards the payload.
         await self.send(text_data=json.dumps({
             'message': event['message'],
             'sender': event['sender'],
@@ -58,10 +64,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
         
     @database_sync_to_async
     def is_user_in_thread(self):
+        # This method is unchanged and correct.
         thread = Thread.objects.filter(pk=self.thread_id).first()
         return thread and self.user in thread.participants.all()
 
     @database_sync_to_async
     def save_message(self, message_text):
+        # This method is unchanged and correct.
         thread = Thread.objects.get(pk=self.thread_id)
         return Message.objects.create(thread=thread, sender=self.user, text=message_text)
