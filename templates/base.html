@@ -72,7 +72,7 @@
         .nav-link-secondary {
              transition: color 0.3s ease;
             color: #d1d5db;
-}
+        }
     </style>
     {% block extra_head %}{% endblock %}
 </head>
@@ -87,8 +87,35 @@
                 <div class="flex items-center space-x-2">
                     {% if user.is_authenticated %}
                         <span class="mr-4 text-gray-300">Hello, {{ user.username }}!</span>
-                        <a href="{% url 'thread-list' %}" class="px-3 py-2 rounded-md text-sm font-medium nav-link">Messages</a>
-                        <a href="{% url 'request-dashboard' %}" class="px-3 py-2 rounded-md text-sm font-medium nav-link">My Requests</a>
+
+                        {# --- MODIFIED SECTION START --- #}
+
+                        {# Messages Link with Badge #}
+                        <a href="{% url 'thread-list' %}" class="relative px-3 py-2 rounded-md text-sm font-medium nav-link">
+                            Messages
+                            {# Badge is only displayed if the count from the context processor is greater than 0 #}
+                            {% if unread_threads_count > 0 %}
+                            <span class="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 px-2 py-1 bg-red-600 text-white text-xs rounded-full">
+                                {{ unread_threads_count }}
+                            </span>
+                            {% endif %}
+                        </a>
+
+                        {# My Requests Link with Badge #}
+                        <a href="{% url 'request-dashboard' %}" class="relative px-3 py-2 rounded-md text-sm font-medium nav-link">
+                            My Requests
+                            {# This badge shows a combined count for both incoming rental requests and pending reviews. #}
+                            {% with requests_and_reviews_count=incoming_request_count|add:pending_review_count %}
+                                {% if requests_and_reviews_count > 0 %}
+                                <span class="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 px-2 py-1 bg-red-600 text-white text-xs rounded-full">
+                                    {{ requests_and_reviews_count }}
+                                </span>
+                                {% endif %}
+                            {% endwith %}
+                        </a>
+
+                        {# --- MODIFIED SECTION END --- #}
+                        
                         <a href="#" class="px-3 py-2 rounded-md text-sm font-medium nav-link">My Tools</a>
                         <form method="post" action="{% url 'account_logout' %}">
                             {% csrf_token %}
@@ -115,6 +142,47 @@
             <p><strong>© {% now "Y" %} SajhaTools.</strong> Build together, share everything.</p>
         </div>
     </footer>
+
+    {% if user.is_authenticated %}
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Find the badge elements in the DOM. Add these IDs to your badge <span> elements.
+        const messageBadge = document.getElementById('message-notification-badge');
+        const requestBadge = document.getElementById('request-notification-badge');
+
+        const notificationSocket = new WebSocket(
+            'ws://' + window.location.host + '/ws/notifications/'
+        );
+
+        notificationSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+
+            if (data.type === 'new_message') {
+                updateBadge(messageBadge);
+            } else if (data.type === 'new_rental_request') {
+                updateBadge(requestBadge);
+            }
+            // Add more conditions here for other notification types like 'new_review_request'
+        };
+
+        notificationSocket.onclose = function(e) {
+            console.error('Notification socket closed unexpectedly');
+        };
+
+        function updateBadge(badgeElement) {
+            if (!badgeElement) return;
+
+            // Make the badge visible
+            badgeElement.style.display = 'inline-block';
+
+            // Get the current count and increment it
+            let currentCount = parseInt(badgeElement.innerText || '0');
+            badgeElement.innerText = currentCount + 1;
+        }
+    });
+    </script>
+    {% endif %}
+
 
 </body>
 </html>

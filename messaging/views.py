@@ -19,6 +19,9 @@ class ThreadListView(LoginRequiredMixin, ListView):
 class ThreadDetailView(LoginRequiredMixin, View):
     def get(self, request, pk):
         thread = get_object_or_404(Thread, pk=pk, participants=request.user)
+        messages_to_mark_as_read = thread.messages.exclude(sender=request.user)
+        messages_to_mark_as_read.update(is_read=True)
+        
         messages = thread.messages.all().order_by('timestamp')
         return render(request, 'messaging/thread_detail.html', {'thread': thread, 'messages': messages})
 

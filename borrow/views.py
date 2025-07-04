@@ -12,6 +12,9 @@ from .forms import BorrowRequestForm
 from tools.models import Tool
 from borrow.models import BorrowRequest
 
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+
 class BorrowRequestCreateView(LoginRequiredMixin, CreateView):
     model = BorrowRequest
     form_class = BorrowRequestForm
@@ -29,7 +32,25 @@ class BorrowRequestCreateView(LoginRequiredMixin, CreateView):
         tool = get_object_or_404(Tool, pk=self.kwargs['tool_pk'])
         form.instance.tool = tool
         form.instance.borrower = self.request.user
-        return super().form_valid(form)
+        response = super().form_valid(form)
+
+        tool_owner = tool.owner
+        
+        
+        channel_layer = get_channel_layer()
+        
+    
+        group_name = f'user_{tool_owner.id}_notifications'
+        
+    
+        async_to_sync(channel_layer.group_send)(
+            group_name,
+            {
+                'type': 'send_notification',
+                'notification_type': 'new_borrow_request',
+            }
+        )
+        return response 
     
 
 class RequestDashboardView(LoginRequiredMixin, ListView):
@@ -74,7 +95,9 @@ class UpdateRequestStatusView(LoginRequiredMixin, View):
         elif action == 'complete':
             if borrow_request.status == BorrowRequest.Status.APPROVED:
                 borrow_request.status = BorrowRequest.Status.COMPLETED
-                borrow_request.tool.availability_status = Tool.Availability.AVAILABLE
+                tool = borrow_request.tool
+                tool.availability_status = Tool.Availability.AVAILABLE
+                tool.save()
 
         borrow_request.save()
         

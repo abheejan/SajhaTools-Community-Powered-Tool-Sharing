@@ -1,8 +1,10 @@
 import json
+from channels.layers import get_channel_layer
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from .models import Thread, Message
 
+from django.utils import timezone
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
@@ -11,12 +13,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
         self.room_group_name = f'chat_{self.thread_id}'
         self.user = self.scope['user']
 
-        # Security check: User must be authenticated and a participant
         if not self.user.is_authenticated or not await self.is_user_in_thread():
             await self.close()
             return
 
-        # Join room group
         await self.channel_layer.group_add(
             self.room_group_name,
             self.channel_name
@@ -24,7 +24,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.accept()
 
     async def disconnect(self, close_code):
-        # Leave room group
         await self.channel_layer.group_discard(
             self.room_group_name,
             self.channel_name
@@ -34,22 +33,44 @@ class ChatConsumer(AsyncWebsocketConsumer):
         text_data_json = json.loads(text_data)
         message = text_data_json['message']
 
-        # Save message to DB
         new_message = await self.save_message(message)
 
-        # Send message to room group
+        formatted_timestamp = timezone.now().strftime('%b %d, %I:%M %p')
+
+        # This block remains. It sends the message to the CHAT window.
         await self.channel_layer.group_send(
             self.room_group_name,
             {
                 'type': 'chat_message',
                 'message': new_message.text,
                 'sender': new_message.sender.username,
-                'timestamp': new_message.timestamp.strftime('%b %d, %-I:%M %p')
+                'timestamp': formatted_timestamp
             }
         )
+        
+        # --- ADDED: Real-time notification badge logic ---
+        # This new block sends a separate notification to the other user's general notification socket.
+        thread = await self.get_thread()
+        channel_layer = get_channel_layer()
+
+        # Find all other participants in the thread besides the sender
+        other_participants = [p for p in await self.get_thread_participants(thread) if p != self.user]
+
+        # Loop through the other participants and send them a notification
+        for participant in other_participants:
+            # Construct the group name for their personal notification channel
+            group_name = f'user_{participant.id}_notifications'
+            await channel_layer.group_send(
+                group_name,
+                {
+                    # This calls the `send_notification` method in our new NotificationConsumer
+                    'type': 'send_notification',
+                    'notification_type': 'new_message',
+                }
+            )
+        # --- ADDED SECTION END ---
 
     async def chat_message(self, event):
-        # Send message to WebSocket
         await self.send(text_data=json.dumps({
             'message': event['message'],
             'sender': event['sender'],
@@ -65,3 +86,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
     def save_message(self, message_text):
         thread = Thread.objects.get(pk=self.thread_id)
         return Message.objects.create(thread=thread, sender=self.user, text=message_text)
+
+    # --- ADDED: Helper methods to get thread info asynchronously ---
+    @database_sync_to_async
+    def get_thread(self):
+        return Thread.objects.get(pk=self.thread_id)
+
+    @database_sync_to_async
+    def get_thread_participants(self, thread):
+        return list(thread.participants.all())
