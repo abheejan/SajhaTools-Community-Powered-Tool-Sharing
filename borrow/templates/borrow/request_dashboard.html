@@ -3,128 +3,244 @@
 {% block title %}My Requests - {{ block.super }}{% endblock %}
 
 {% block content %}
-<div class="space-y-12">
-    <!-- INCOMING REQUESTS on my tools -->
-    <div>
-        <h2 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">Incoming Requests for My Tools</h2>
-        {% with requests=incoming_tool_requests %}
-            {% if requests %}
-                <div class="bg-white shadow rounded-lg">
-                    <ul class="divide-y divide-gray-200">
-                        {% for req in requests %}
-                        <li class="p-4 flex items-center justify-between">
-                            <div>
-                                <p class="text-sm font-medium text-blue-600">
-                                    <a href="{{ req.tool.get_absolute_url }}">{{ req.tool.name }}</a>
-                                </p>
-                                <p class="text-sm text-gray-600">
-                                    Requested by: <span class="font-semibold">{{ req.borrower.username }}</span>
-                                </p>
-                                <p class="text-xs text-gray-500">
-                                    Dates: {{ req.start_date|date:"M d, Y" }} to {{ req.end_date|date:"M d, Y" }}
-                                </p>
-                            </div>
-                            <!-- Actions for Pending Requests -->
+<style>
+
+    /* Keyframe Animations */
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .page-wrapper {
+        display: flex;
+        flex-direction: column;
+        min-height: calc(100vh - 160px); 
+    }
+
+    .dashboard-container {
+        animation: fadeInUp 0.6s ease-out forwards;
+        flex-grow: 1; 
+    }
+
+    
+    .tabs {
+        border-bottom: 2px solid #e5e7eb;
+        margin-bottom: 2rem;
+    }
+    .tab-link {
+        padding: 0.75rem 1rem;
+        font-weight: 600;
+        color: #6b7280;
+        border-bottom: 3px solid transparent;
+        margin-bottom: -2px; 
+        transition: color 0.2s, border-color 0.2s;
+    }
+    .tab-link:hover {
+        color: #1f2937;
+    }
+    .tab-link.active {
+        color: #ff8c00;
+        border-color: #ff8c00;
+    }
+    .tab-content {
+        display: none;
+    }
+    .tab-content.active {
+        display: block;
+    }
+
+    .request-card {
+        background-color: #fff;
+        border-radius: 1rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        padding: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        transition: box-shadow 0.3s, transform 0.3s;
+    }
+    .request-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    }
+    .tool-thumbnail {
+        width: 80px;
+        height: 80px;
+        border-radius: 0.75rem;
+        object-fit: cover;
+        flex-shrink: 0;
+    }
+    .request-details {
+        flex-grow: 1;
+    }
+    .request-actions {
+        flex-shrink: 0;
+    }
+
+    .action-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .action-btn svg {
+        width: 16px;
+        height: 16px;
+    }
+    .btn-approve { background-color: #10b981; }
+    .btn-approve:hover { background-color: #059669; }
+    .btn-deny { background-color: #ef4444; }
+    .btn-deny:hover { background-color: #dc2626; }
+    .btn-complete { background-color: #3b82f6; }
+    .btn-complete:hover { background-color: #2563eb; }
+    
+    .status-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: capitalize;
+    }
+    .badge-pending { background-color: #fef3c7; color: #92400e; }
+    .badge-approved { background-color: #d1fae5; color: #065f46; }
+    .badge-denied { background-color: #fee2e2; color: #991b1b; }
+    .badge-completed { background-color: #e5e7eb; color: #4b5563; }
+    
+    .empty-state {
+        background-color: #fff;
+        border-radius: 1rem;
+        padding: 4rem;
+        text-align: center;
+        color: #6b7280;
+    }
+
+</style>
+
+<div class="page-wrapper">
+    <div class="dashboard-container">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6">My Requests Dashboard</h1>
+
+        <div class="tabs flex space-x-4">
+            <button class="tab-link active" data-tab="incoming">Incoming Requests</button>
+            <button class="tab-link" data-tab="outgoing">My Borrowing Requests</button>
+        </div>
+
+        <div id="incoming" class="tab-content active space-y-4">
+            {% with requests=incoming_tool_requests %}
+                {% if requests %}
+                    {% for req in requests %}
+                    <div class="request-card">
+                        <img src="{{ req.tool.image.url }}" alt="{{ req.tool.name }}" class="tool-thumbnail">
+                        <div class="request-details">
+                            <p class="font-bold text-lg text-gray-800">{{ req.tool.name }}</p>
+                            <p class="text-sm text-gray-600">Requested by: <span class="font-semibold">{{ req.borrower.username }}</span></p>
+                            <p class="text-xs text-gray-500 mt-1">Dates: {{ req.start_date|date:"M d" }} - {{ req.end_date|date:"M d, Y" }}</p>
+                        </div>
+                        <div class="request-actions">
                             {% if req.status == 'pending' %}
-                            <div class="flex space-x-2">
-                                <form action="{% url 'request-update-status' req.pk %}" method="post">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="action" value="approve">
-                                    <button type="submit" class="px-3 py-1 text-xs font-medium text-white bg-green-600 rounded-md hover:bg-green-700">Approve</button>
-                                </form>
-                                <form action="{% url 'request-update-status' req.pk %}" method="post">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="action" value="deny">
-                                    <button type="submit" class="px-3 py-1 text-xs font-medium text-white bg-red-600 rounded-md hover:bg-red-700">Deny</button>
-                                </form>
-                            </div>
-                            
-                            {# --- MODIFIED SECTION START --- #}
+                                <div class="flex space-x-2">
+                                    <form action="{% url 'request-update-status' req.pk %}" method="post">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="approve">
+                                        <button type="submit" class="action-btn btn-approve">
+                                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                            Approve
+                                        </button>
+                                    </form>
+                                    <form action="{% url 'request-update-status' req.pk %}" method="post">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="deny">
+                                        <button type="submit" class="action-btn btn-deny">
+                                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                            Deny
+                                        </button>
+                                    </form>
+                                </div>
                             {% elif req.status == 'approved' %}
-                            <div>
-                                {# ADDED: "Mark as Complete" button for tool owner. #}
                                 <form action="{% url 'request-update-status' req.pk %}" method="post">
                                     {% csrf_token %}
                                     <input type="hidden" name="action" value="complete">
-                                    <button type="submit" class="px-3 py-1 text-xs font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">Mark as Returned</button>
+                                    <button type="submit" class="action-btn btn-complete">Mark as Returned</button>
                                 </form>
-                            </div>
                             {% else %}
-                            {# The existing badge logic for Denied and Completed statuses remains. #}
-                            <div>
-                                <span class="px-3 py-1 text-xs font-medium rounded-full
-                                    {% if req.status == 'denied' %} bg-red-100 text-red-800 {% endif %}
-                                    {% if req.status == 'completed' %} bg-gray-100 text-gray-800 {% endif %}">
+                                <span class="status-badge 
+                                    {% if req.status == 'denied' %}badge-denied{% endif %}
+                                    {% if req.status == 'completed' %}badge-completed{% endif %}">
                                     {{ req.get_status_display }}
                                 </span>
-                            </div>
                             {% endif %}
-                            {# --- MODIFIED SECTION END --- #}
-                            
-                        </li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            {% else %}
-                <p class="text-gray-500">You have no incoming requests for your tools.</p>
-            {% endif %}
-        {% endwith %}
-    </div>
-
-    <!-- MY BORROW REQUESTS -->
-    <div>
-        <h2 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">My Borrowing Requests</h2>
-        {% with requests=my_borrow_requests %}
-            {% if requests %}
-            <div class="bg-white shadow rounded-lg">
-                <ul class="divide-y divide-gray-200">
-                    {% for req in requests %}
-                    <li class="p-4 flex items-center justify-between">
-                        <div>
-                            <p class="text-sm font-medium text-blue-600">
-                                <a href="{{ req.tool.get_absolute_url }}">{{ req.tool.name }}</a>
-                            </p>
-                            <p class="text-sm text-gray-600">
-                                Owner: <span class="font-semibold">{{ req.tool.owner.username }}</span>
-                            </p>
-                            <p class="text-xs text-gray-500">
-                                Requested on: {{ req.request_date|date:"M d, Y" }}
-                            </p>
                         </div>
-                        <div>
-                            {# The existing status badge remains the primary display #}
-                            <span class="px-3 py-1 text-xs font-medium rounded-full
-                                {% if req.status == 'pending' %} bg-yellow-100 text-yellow-800 {% endif %}
-                                {% if req.status == 'approved' %} bg-green-100 text-green-800 {% endif %}
-                                {% if req.status == 'denied' %} bg-red-100 text-red-800 {% endif %}
-                                {% if req.status == 'completed' %} bg-gray-100 text-gray-800 {% endif %}">
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">You have no incoming requests for your tools.</div>
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        <div id="outgoing" class="tab-content space-y-4">
+            {% with requests=my_borrow_requests %}
+                {% if requests %}
+                    {% for req in requests %}
+                    <div class="request-card">
+                        <img src="{{ req.tool.image.url }}" alt="{{ req.tool.name }}" class="tool-thumbnail">
+                        <div class="request-details">
+                            <p class="font-bold text-lg text-gray-800">{{ req.tool.name }}</p>
+                            <p class="text-sm text-gray-600">Owner: <span class="font-semibold">{{ req.tool.owner.username }}</span></p>
+                            <p class="text-xs text-gray-500 mt-1">Requested on: {{ req.request_date|date:"M d, Y" }}</p>
+                        </div>
+                        <div class="request-actions">
+                            <span class="status-badge 
+                                {% if req.status == 'pending' %}badge-pending{% endif %}
+                                {% if req.status == 'approved' %}badge-approved{% endif %}
+                                {% if req.status == 'denied' %}badge-denied{% endif %}
+                                {% if req.status == 'completed' %}badge-completed{% endif %}">
                                 {{ req.get_status_display }}
                             </span>
-
-                            {# --- ADDED SECTION START --- #}
-                            {# ADDED: "Leave a Review" link for the borrower. #}
-                            {% if req.status == 'completed' %}
-                                {% if not req.review %} {# Only show if a review does not yet exist for this rental. #}
+                            {% if req.status == 'completed' and not req.review %}
                                 <div class="mt-2 text-right">
-                                     <a href="{% url 'add-review' req.pk %}" class="text-sm font-medium text-blue-600 hover:text-blue-800">Leave a Review</a>
+                                    <a href="{% url 'add-review' req.pk %}" class="text-sm font-medium text-orange-600 hover:text-orange-800">Leave a Review</a>
                                 </div>
-                                {% else %}
-                                {# If a review *does* exist, it's good practice to show this. #}
-                                    <div class="mt-2 text-right">
-                                        <p class="text-sm text-gray-500 italic">Review submitted</p>
-                                    </div>
-                                {% endif %}
+                            {% elif req.review %}
+                                 <div class="mt-2 text-right">
+                                    <p class="text-sm text-gray-500 italic">Review submitted</p>
+                                </div>
+
                             {% endif %}
-                            {# --- ADDED SECTION END --- #}
                         </div>
-                    </li>
+                    </div>
                     {% endfor %}
-                </ul>
-            </div>
-            {% else %}
-                <p class="text-gray-500">You have not requested any tools yet.</p>
-            {% endif %}
-        {% endwith %}
+                {% else %}
+                    <div class="empty-state">You have not requested any tools yet.</div>
+                {% endif %}
+            {% endwith %}
+        </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const tabs = document.querySelectorAll('.tab-link');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            tabs.forEach(t => t.classList.remove('active'));
+            tabContents.forEach(c => c.classList.remove('active'));
+
+            tab.classList.add('active');
+            document.getElementById(tab.dataset.tab).classList.add('active');
+        });
+    });
+});
+</script>
+
 {% endblock %}
