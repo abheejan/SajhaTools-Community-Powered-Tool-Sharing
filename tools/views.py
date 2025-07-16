@@ -18,6 +18,9 @@ class ToolListView(ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
+        # Exclude current user's own tools if authenticated
+        if self.request.user.is_authenticated:
+            queryset = queryset.exclude(owner=self.request.user)
         q = self.request.GET.get('q', '').strip()
         if q:
             queryset = queryset.filter(
@@ -109,3 +112,13 @@ def proceed_to_borrow(request):
         return redirect('view-cart')
     first_tool_id = cart[0]
     return redirect('borrow-request-create', tool_pk=first_tool_id)
+
+@login_required
+def my_tools(request):
+    tools = Tool.objects.filter(owner=request.user)
+    q = request.GET.get('q', '').strip()
+    if q:
+        tools = tools.filter(
+            models.Q(name__icontains=q) | models.Q(description__icontains=q)
+        )
+    return render(request, 'tools/my_tools.html', {'tools': tools, 'search_query': q})

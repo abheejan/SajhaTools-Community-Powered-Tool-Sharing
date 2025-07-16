@@ -105,7 +105,7 @@
                                 {% endif %}
                             {% endwith %}
                         </a>
-                        <a href="#" class="px-3 py-2 rounded-md text-sm font-medium nav-link">My Tools</a>
+                        <a href="{% url 'my-tools' %}" class="px-3 py-2 rounded-md text-sm font-medium nav-link">My Tools</a>
                         <form method="post" action="{% url 'account_logout' %}">
                             {% csrf_token %}
                             <button type="submit" class="primary-action-btn ml-2">Logout</button>

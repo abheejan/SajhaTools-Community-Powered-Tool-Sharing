@@ -19,4 +19,5 @@ urlpatterns = [
     path('cart/remove/<int:tool_id>/', views.remove_from_cart, name='remove-from-cart'),
     path('cart/proceed/', views.proceed_to_borrow, name='proceed-to-borrow'),
     path('cart/login-required/', views.cart_login_required, name='cart-login-required'),
+    path('my-tools/', views.my_tools, name='my-tools'),
 ]
