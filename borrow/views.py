@@ -34,6 +34,19 @@ class BorrowRequestCreateView(LoginRequiredMixin, CreateView):
         form.instance.borrower = self.request.user
         response = super().form_valid(form)
 
+        # Remove this tool from the cart
+        cart = self.request.session.get('cart', [])
+        if str(tool.pk) in cart:
+            cart.remove(str(tool.pk))
+        elif tool.pk in cart:
+            cart.remove(tool.pk)
+        self.request.session['cart'] = cart
+
+        # If there are more tools in the cart, redirect to the next one's request form
+        if cart:
+            next_tool_id = cart[0]
+            return redirect('borrow-request-create', tool_pk=next_tool_id)
+
         tool_owner = tool.owner
         
         

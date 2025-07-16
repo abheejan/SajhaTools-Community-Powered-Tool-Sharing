@@ -9,13 +9,12 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             background-color: #f0f2f5;
         }
-
         @keyframes fadeInDown {
             from { opacity: 0; transform: translateY(-20px); }
             to { opacity: 1; transform: translateY(0); }
@@ -24,7 +23,6 @@
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
         .navbar {
             animation: fadeInDown 0.6s ease-out forwards;
         }
@@ -34,7 +32,6 @@
         footer {
              animation: fadeInUp 0.8s ease-out 0.4s backwards;
         }
-
         .primary-action-btn {
             display: inline-block;
             padding: 0.5rem 1rem;
@@ -54,7 +51,6 @@
             box-shadow: 0 6px 20px rgba(255, 140, 0, 0.5);
             color: #fff;
         }
-        
         .nav-link {
             transition: color 0.3s ease, background-color 0.3s ease;
             color: #E5E7EB; 
@@ -85,26 +81,22 @@
                     <a href="{% url 'home' %}" class="font-bold text-2xl text-white">Sajha<span style="color: #ff8c00;">Tools</span></a>
                 </div>
                 <div class="flex items-center space-x-2">
+                    <a href="{% if user.is_authenticated %}{% url 'view-cart' %}{% else %}{% url 'cart-login-required' %}{% endif %}" class="relative mx-2">
+                        <i class="fas fa-shopping-cart text-2xl text-white"></i>
+                        {% if request.session.cart and request.session.cart|length > 0 %}
+                        <span class="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full px-2 py-0.5">{{ request.session.cart|length }}</span>
+                        {% endif %}
+                    </a>
                     {% if user.is_authenticated %}
                         <span class="mr-4 text-gray-300">Hello, {{ user.username }}!</span>
-
-                        {# --- MODIFIED SECTION START --- #}
-
-                        {# Messages Link with Badge #}
-                        <a href="{% url 'thread-list' %}" class="relative px-3 py-2 rounded-md text-sm font-medium nav-link">
-                            Messages
-                            {# Badge is only displayed if the count from the context processor is greater than 0 #}
+                        <a href="{% url 'thread-list' %}" class="relative px-3 py-2 rounded-md text-sm font-medium nav-link">Messages
                             {% if unread_threads_count > 0 %}
                             <span class="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 px-2 py-1 bg-red-600 text-white text-xs rounded-full">
                                 {{ unread_threads_count }}
                             </span>
                             {% endif %}
                         </a>
-
-                        {# My Requests Link with Badge #}
-                        <a href="{% url 'request-dashboard' %}" class="relative px-3 py-2 rounded-md text-sm font-medium nav-link">
-                            My Requests
-                            {# This badge shows a combined count for both incoming rental requests and pending reviews. #}
+                        <a href="{% url 'request-dashboard' %}" class="relative px-3 py-2 rounded-md text-sm font-medium nav-link">My Requests
                             {% with requests_and_reviews_count=incoming_request_count|add:pending_review_count %}
                                 {% if requests_and_reviews_count > 0 %}
                                 <span class="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 px-2 py-1 bg-red-600 text-white text-xs rounded-full">
@@ -113,9 +105,6 @@
                                 {% endif %}
                             {% endwith %}
                         </a>
-
-                        {# --- MODIFIED SECTION END --- #}
-                        
                         <a href="#" class="px-3 py-2 rounded-md text-sm font-medium nav-link">My Tools</a>
                         <form method="post" action="{% url 'account_logout' %}">
                             {% csrf_token %}
@@ -129,34 +118,28 @@
             </div>
         </div>
     </nav>
-
     <main class="py-10">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             {% block content %}
             {% endblock %}
         </div>
     </main>
-
     <footer class="bg-white mt-12 border-t border-gray-200">
         <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 text-center text-gray-500 text-sm">
             <p><strong>© {% now "Y" %} SajhaTools.</strong> Build together, share everything.</p>
         </div>
     </footer>
-
     {% if user.is_authenticated %}
     <script>
     document.addEventListener('DOMContentLoaded', () => {
         // Find the badge elements in the DOM. Add these IDs to your badge <span> elements.
         const messageBadge = document.getElementById('message-notification-badge');
         const requestBadge = document.getElementById('request-notification-badge');
-
         const notificationSocket = new WebSocket(
             'ws://' + window.location.host + '/ws/notifications/'
         );
-
         notificationSocket.onmessage = function(e) {
             const data = JSON.parse(e.data);
-
             if (data.type === 'new_message') {
                 updateBadge(messageBadge);
             } else if (data.type === 'new_rental_request') {
@@ -164,17 +147,13 @@
             }
             // Add more conditions here for other notification types like 'new_review_request'
         };
-
         notificationSocket.onclose = function(e) {
             console.error('Notification socket closed unexpectedly');
         };
-
         function updateBadge(badgeElement) {
             if (!badgeElement) return;
-
             // Make the badge visible
             badgeElement.style.display = 'inline-block';
-
             // Get the current count and increment it
             let currentCount = parseInt(badgeElement.innerText || '0');
             badgeElement.innerText = currentCount + 1;
@@ -182,7 +161,5 @@
     });
     </script>
     {% endif %}
-
-
 </body>
 </html>

@@ -120,5 +120,8 @@
         {% endwith %}
     </div>
     {# --- ADDED SECTION END --- #}
+    <div class="mt-6 flex justify-end">
+        <a href="{% url 'add-to-cart' tool.id %}" class="px-6 py-2 rounded-lg bg-primary text-white font-semibold hover:bg-primary-dark transition">Add to Cart</a>
+    </div>
 </div>
 {% endblock %}
