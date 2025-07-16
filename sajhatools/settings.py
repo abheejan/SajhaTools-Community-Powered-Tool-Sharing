@@ -54,7 +54,7 @@ INSTALLED_APPS = [
     'reviews',
 ]
 
-SITE_ID=2 # Required for allauth
+SITE_ID = 1
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',

@@ -94,23 +94,27 @@
         width: 16px;
         height: 16px;
     }
-    .btn-approve { background-color: #10b981; }
-    .btn-approve:hover { background-color: #059669; }
-    .btn-deny { background-color: #ef4444; }
-    .btn-deny:hover { background-color: #dc2626; }
-    .btn-complete { background-color: #3b82f6; }
-    .btn-complete:hover { background-color: #2563eb; }
-    
-    .status-badge {
-        display: inline-block;
-        padding: 0.25rem 0.75rem;
-        border-radius: 9999px;
-        font-size: 0.75rem;
-        font-weight: 600;
-        text-transform: capitalize;
+    .btn-approve, .btn-complete {
+        background: linear-gradient(90deg, #ff8c00, #ffa500);
+        color: #fff;
+        box-shadow: 0 4px 15px rgba(255, 140, 0, 0.3);
     }
-    .badge-pending { background-color: #fef3c7; color: #92400e; }
-    .badge-approved { background-color: #d1fae5; color: #065f46; }
+    .btn-approve:hover, .btn-complete:hover {
+        background: linear-gradient(90deg, #e67e00, #ff8c00);
+        box-shadow: 0 6px 20px rgba(255, 140, 0, 0.5);
+    }
+    .btn-deny {
+        background: #dc2626;
+        color: #fff;
+    }
+    .btn-deny:hover {
+        background: #991b1b;
+    }
+    .badge-pending, .badge-approved {
+        background: #fff7e6;
+        color: #ff8c00;
+        border: 1px solid #ff8c00;
+    }
     .badge-denied { background-color: #fee2e2; color: #991b1b; }
     .badge-completed { background-color: #e5e7eb; color: #4b5563; }
     

@@ -13,54 +13,70 @@
         Post a Tool
     </a>
 </div>
-
+<form method="get" class="mb-8 flex justify-center">
+    <input type="text" name="q" value="{{ search_query }}" placeholder="Search tools..." class="w-full max-w-md px-4 py-2 border border-gray-300 rounded-l focus:outline-none focus:ring-2 focus:ring-blue-500" />
+    <button type="submit" class="px-6 py-2 bg-blue-600 text-white font-semibold rounded-r hover:bg-blue-700 transition">Search</button>
+</form>
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-    {% for tool in tools %}
-        {# Wrapped the card in a div to allow for flex layout inside #}
-        <div class="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col">
-            <a href="{{ tool.get_absolute_url }}">
-                <img class="h-48 w-full object-cover" src="{{ tool.image.url }}" alt="{{ tool.name }}">
-            </a>
-            <div class="p-6 flex-grow flex flex-col">
-                <div class="flex items-baseline justify-between">
-                    <h2 class="font-bold text-xl mb-2">{{ tool.name }}</h2>
-                    {% if tool.availability_status == 'available' %}
-                        <span class="inline-block bg-green-200 text-green-800 text-xs px-2 rounded-full uppercase font-semibold tracking-wide">Available</span>
-                    {% else %}
-                        <span class="inline-block bg-yellow-200 text-yellow-800 text-xs px-2 rounded-full uppercase font-semibold tracking-wide">Borrowed</span>
-                    {% endif %}
-                </div>
-                
-                {# --- ADDED SECTION START --- #}
-                {# ADDED: Star rating display #}
-                {% if tool.review_count > 0 %}
-                <div class="flex items-center mb-2">
-                    <div class="flex items-center">
-                        {% star_rating tool.average_rating %}
+    {% if tools %}
+        {% for tool in tools %}
+            {# Wrapped the card in a div to allow for flex layout inside #}
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col">
+                <a href="{{ tool.get_absolute_url }}">
+                    <img class="h-48 w-full object-cover" src="{{ tool.image.url }}" alt="{{ tool.name }}">
+                </a>
+                <div class="p-6 flex-grow flex flex-col">
+                    <div class="flex items-baseline justify-between">
+                        <h2 class="font-bold text-xl mb-2">{{ tool.name }}</h2>
+                        {% if tool.availability_status == 'available' %}
+                            <span class="inline-block bg-green-200 text-green-800 text-xs px-2 rounded-full uppercase font-semibold tracking-wide">Available</span>
+                        {% else %}
+                            <span class="inline-block bg-yellow-200 text-yellow-800 text-xs px-2 rounded-full uppercase font-semibold tracking-wide">Borrowed</span>
+                        {% endif %}
                     </div>
-                    <p class="text-gray-600 text-xs ml-2">
-                        {{ tool.average_rating|floatformat:1 }} ({{ tool.review_count }} review{{ tool.review_count|pluralize }})
-                    </p>
-                </div>
-                {% else %}
-                <div class="h-5 mb-2"> {# This is a spacer to keep card alignment consistent #}
-                    <p class="text-gray-400 text-xs italic">No reviews yet</p>
-                </div>
-                {% endif %}
-                {# --- ADDED SECTION END --- #}
-                
-                <p class="text-gray-700 text-sm mb-2">Owner: {{ tool.owner.username }}</p>
-                <p class="text-gray-600 text-sm truncate flex-grow">{{ tool.description }}</p> {# Added flex-grow #}
-                <div class="mt-4">
-                    <a href="{{ tool.get_absolute_url }}" class="text-blue-600 hover:text-blue-800 font-semibold">View Details →</a>
+                    
+                    {# --- ADDED SECTION START --- #}
+                    {# ADDED: Star rating display #}
+                    {% if tool.review_count > 0 %}
+                    <div class="flex items-center mb-2">
+                        <div class="flex items-center">
+                            {% star_rating tool.average_rating %}
+                        </div>
+                        <p class="text-gray-600 text-xs ml-2">
+                            {{ tool.average_rating|floatformat:1 }} ({{ tool.review_count }} review{{ tool.review_count|pluralize }})
+                        </p>
+                    </div>
+                    {% else %}
+                    <div class="h-5 mb-2"> {# This is a spacer to keep card alignment consistent #}
+                        <p class="text-gray-400 text-xs italic">No reviews yet</p>
+                    </div>
+                    {% endif %}
+                    {# --- ADDED SECTION END --- #}
+                    
+                    <p class="text-gray-700 text-sm mb-2">Owner: {{ tool.owner.username }}</p>
+                    <p class="text-gray-600 text-sm truncate flex-grow">{{ tool.description }}</p> {# Added flex-grow #}
+                    <div class="flex justify-end mt-4">
+                        {% if tool.owner == user %}
+                            <span class="px-4 py-2 rounded bg-gray-300 text-gray-600 font-semibold cursor-not-allowed">Own Item</span>
+                        {% else %}
+                            <a href="{% url 'add-to-cart' tool.id %}" class="px-4 py-2 rounded bg-blue-600 text-white font-semibold hover:bg-blue-700 transition">Add to Cart</a>
+                        {% endif %}
+                    </div>
+                    <div class="mt-4">
+                        <a href="{{ tool.get_absolute_url }}" class="text-blue-600 hover:text-blue-800 font-semibold">View Details →</a>
+                    </div>
                 </div>
             </div>
-        </div>
-    {% empty %}
+        {% endfor %}
+    {% else %}
         <div class="col-span-full text-center py-12">
-            <h2 class="text-xl text-gray-500">No tools have been posted yet.</h2>
-            <p class="mt-2">Be the first to share something with your community!</p>
+            {% if search_query %}
+                <h2 class="text-xl text-gray-500">No such tools available.</h2>
+            {% else %}
+                <h2 class="text-xl text-gray-500">No tools have been posted yet.</h2>
+                <p class="mt-2">Be the first to share something with your community!</p>
+            {% endif %}
         </div>
-    {% endfor %}
+    {% endif %}
 </div>
 {% endblock %}

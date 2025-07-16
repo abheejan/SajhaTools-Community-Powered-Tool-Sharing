@@ -17,7 +17,7 @@
             {% for message in messages %}
                 {% if message.sender == user %}
                 <div class="flex justify-end">
-                    <div class="bg-blue-500 text-white p-3 rounded-l-lg rounded-br-lg max-w-xs">
+                    <div class="bg-primary text-white p-3 rounded-l-lg rounded-br-lg max-w-xs">
                         <p class="text-sm">{{ message.text }}</p>
                     </div>
                 </div>
@@ -35,7 +35,7 @@
         <div class="p-4 border-t">
             <form id="chat-form" class="flex">
                 <input id="chat-message-input" type="text" placeholder="Type a message..." class="flex-grow px-3 py-2 border rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <button id="chat-message-submit" class="bg-blue-500 text-white px-4 py-2 rounded-r-md hover:bg-blue-600">Send</button>
+                <button id="chat-message-submit" class="bg-primary text-white px-4 py-2 rounded-r-md hover:bg-primary-dark">Send</button>
             </form>
         </div>
     </div>
@@ -70,7 +70,7 @@
             // My message
             messageElement = `
                 <div class="flex justify-end">
-                    <div class="bg-blue-500 text-white p-3 rounded-l-lg rounded-br-lg max-w-xs">
+                    <div class="bg-primary text-white p-3 rounded-l-lg rounded-br-lg max-w-xs">
                         <p class="text-sm">${data.message}</p>
                     </div>
                 </div>`;
