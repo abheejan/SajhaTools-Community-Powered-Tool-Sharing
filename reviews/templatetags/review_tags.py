@@ -1,31 +1,57 @@
 from django import template
-from django.utils.safestring import mark_safe # <--- IMPORT THIS
+from django.utils.safestring import mark_safe
 
 register = template.Library()
 
 @register.simple_tag
 def star_rating(rating):
-    if rating is None or rating == 0:
-        return "" 
-        
-    full_stars = int(rating)
+    """
+    Generates a string of SVG icons for star ratings, correctly handling full, half, and empty stars.
+    """
+    if rating is None:
+        rating = 0
+    
+    try:
+        # Ensure rating is a valid number
+        rating = float(rating)
+    except (ValueError, TypeError):
+        rating = 0
 
-    half_star = 1 if (rating - full_stars) >= 0.25 and (rating - full_stars) < 0.75 else 0
+    # --- SVG Icons ---
+    # These icons are designed to be styled by CSS on the page (e.g., color, size).
     
-    full_stars = round(rating - (0.5 if half_star else 0)) 
-    empty_stars = 5 - full_stars - half_star
+    # A full, solid star
+    svg_star_full = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>'
     
+    # A half-filled star icon
+    svg_star_half = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292zM10 1.26v13.51l5.878 4.26-2.22-6.883 5.342-4.632-6.98-.602L10 1.26z" clip-rule="evenodd" /></svg>'
 
-    svg_star_full = '<svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>'
+    # An empty star (outline)
+    svg_star_empty = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.31h5.418a.562.562 0 01.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-3.356a.563.563 0 00-.652 0l-4.725 3.356a.562.562 0 01-.84-.61l1.285-5.385a.562.562 0 00-.182-.557l-4.204-3.602a.562.562 0 01.321-.988h5.418a.563.563 0 00.475-.31L11.48 3.5z" /></svg>'
+
+    # --- New, Clearer Logic ---
+    # Get the whole number of stars
+    full_stars_count = int(rating)
     
-    svg_star_empty = '<svg class="w-5 h-5 text-gray-300" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 2.929l1.455 4.47-4.298.001 3.284 2.39-1.245 4.093 3.523-2.617 3.524 2.617-1.246-4.093 3.284-2.39-4.298-.001L10 2.929zM10 1c.58 0 1.05.513  .874 1.248l-1.45 4.469 4.298.001c.792 0 1.137 1.01.53 1.543l-3.283 2.39 1.245 4.092c.28.92-.81 1.64-1.61.99l-3.524-2.618-3.523 2.618c-.8.65-1.89-.07-1.61-.99l1.246-4.092-3.284-2.39c-.607-.533-.262-1.543.53-1.543l4.298-.001-1.45-4.469C8.95.513 9.42 1 10 1z" clip-rule="evenodd"></path></svg>'
-    
-   
-    
+    # Get the decimal part to determine rounding or half-star
+    decimal = rating - full_stars_count
+
+    # Determine how many of each star type to show
+    if decimal >= 0.75:
+        full_stars_count += 1
+        half_star_count = 0
+    elif decimal >= 0.25:
+        half_star_count = 1
+    else:
+        half_star_count = 0
+
+    empty_stars_count = 5 - full_stars_count - half_star_count
+
+    # Build the final HTML string
     stars_html = (
-        svg_star_full * full_stars +
-        svg_star_empty * (5 - full_stars) 
+        (svg_star_full * full_stars_count) +
+        (svg_star_half * half_star_count) +
+        (svg_star_empty * empty_stars_count)
     )
-
 
     return mark_safe(stars_html)
