@@ -1,11 +1,19 @@
-Hi {{ user.username }},
+Welcome to SajhaTools!
 
-Welcome to CommunityToolShare!
+Hello {{ user.username }},
 
-To complete your signup and activate your account, please click the link below:
+Welcome to SajhaTools! We're excited to have you join our community of tool sharers. 
+To complete your registration and start sharing tools, please verify your email address.
+
+To verify your email, please visit:
 {{ activate_url }}
 
-If you did not sign up for an account, please ignore this email.
+If you're having trouble with the link above, copy and paste it into your browser.
 
-Thanks,
-The CommunityToolShare Team
+Welcome to SajhaTools!
+Connect with your community to share and borrow tools.
+
+If you didn't create this account, you can safely ignore this email.
+
+Best regards,
+The SajhaTools Team 

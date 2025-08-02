@@ -72,7 +72,7 @@
     </style>
     {% block extra_head %}{% endblock %}
 </head>
-<body class="text-gray-800">
+<body class="text-gray-800 flex flex-col min-h-screen">
     
     <nav class="bg-gray-800 shadow-lg navbar" style="background-color: #1A3A3A;">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -118,17 +118,20 @@
             </div>
         </div>
     </nav>
-    <main class="py-10">
+
+    <main class="py-10 flex-grow">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             {% block content %}
             {% endblock %}
         </div>
     </main>
+
     <footer class="bg-white mt-12 border-t border-gray-200">
         <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 text-center text-gray-500 text-sm">
             <p><strong>© {% now "Y" %} SajhaTools.</strong> Build together, share everything.</p>
         </div>
     </footer>
+
     {% if user.is_authenticated %}
     <script>
     document.addEventListener('DOMContentLoaded', () => {
