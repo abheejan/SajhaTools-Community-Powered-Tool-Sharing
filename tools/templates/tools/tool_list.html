@@ -58,8 +58,10 @@
                     <div class="flex justify-end mt-4">
                         {% if tool.owner == user %}
                             <span class="px-4 py-2 rounded bg-gray-300 text-gray-600 font-semibold cursor-not-allowed">Own Item</span>
-                        {% else %}
+                        {% elif tool.availability_status == 'available' %}
                             <a href="{% url 'add-to-cart' tool.id %}" class="px-4 py-2 rounded bg-blue-600 text-white font-semibold hover:bg-blue-700 transition">Add to Cart</a>
+                        {% else %}
+                            <span class="px-4 py-2 rounded bg-gray-300 text-gray-600 font-semibold cursor-not-allowed">Currently Borrowed</span>
                         {% endif %}
                     </div>
                     <div class="mt-4">
