@@ -1,9 +1,66 @@
 {% extends 'base.html' %}
 {% block title %}Login Required - {{ block.super }}{% endblock %}
+
 {% block content %}
-<div class="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md mt-12 text-center">
-    <h2 class="text-2xl font-bold mb-4">Login Required</h2>
-    <p class="mb-6 text-gray-700">You must be logged in to view your cart and proceed to borrow tools.</p>
-    <a href="{% url 'account_login' %}?next={% url 'view-cart' %}" class="px-6 py-2 rounded-lg bg-primary text-white font-semibold hover:bg-primary-dark transition">Login</a>
+<style>
+    :root {
+        --primary-orange: #FF9500;
+        --dark-text: #333;
+        --border-color: #e5e7eb;
+        --card-bg: rgba(255, 255, 255, 0.9);
+        --bg-color: #f4f7f6;
+    }
+    body {
+        background-color: var(--bg-color);
+        background-image: url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%239C92AC" fill-opacity="0.05"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');
+    }
+    .notice-card {
+        background-color: var(--card-bg);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
+        border: 1px solid var(--border-color);
+        backdrop-filter: blur(12px);
+    }
+    .primary-btn {
+        display: inline-block;
+        padding: 0.75rem 2rem;
+        border-radius: 0.5rem;
+        background-color: var(--primary-orange);
+        color: white;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 15px rgba(255, 140, 0, 0.3);
+    }
+    .primary-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 7px 20px rgba(255, 140, 0, 0.4);
+    }
+    .secondary-link {
+        color: var(--primary-orange);
+        font-weight: 500;
+        text-decoration: none;
+        transition: color 0.2s ease;
+    }
+    .secondary-link:hover {
+        text-decoration: underline;
+    }
+</style>
+
+<div class="max-w-md mx-auto notice-card p-10 rounded-xl shadow-md mt-16 text-center">
+    <div class="flex justify-center mb-4">
+        <div class="h-16 w-16 bg-orange-100 rounded-full flex items-center justify-center">
+            <svg class="h-8 w-8 text-orange-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+            </svg>
+        </div>
+    </div>
+    <h2 class="text-2xl font-bold mb-3 text-gray-800">Login Required</h2>
+    <p class="mb-8 text-gray-600">You must be logged in to view your cart and borrow tools.</p>
+    <div class="space-y-4">
+        <a href="{% url 'account_login' %}?next={{ request.path }}" class="primary-btn w-full block">Login</a>
+        <p class="text-sm text-gray-500">
+            Don't have an account? <a href="{% url 'account_signup' %}?next={{ request.path }}" class="secondary-link">Sign Up</a>
+        </p>
+    </div>
 </div>
-{% endblock %} 
+{% endblock %}
