@@ -1,0 +1,15 @@
+[build]
+  command = "npm run build:css:prod"
+  publish = "static"
+
+[[redirects]]
+  from = "/api/*"
+  to = "https://YOUR-BACKEND-DOMAIN.com/:splat"
+  status = 200
+  force = true
+
+# Optional: SPA-style fallback to index.html if you add one later
+# [[redirects]]
+#   from = "/*"
+#   to = "/index.html"
+#   status = 200 

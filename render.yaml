@@ -1,0 +1,38 @@
+services:
+  - type: web
+    name: sajhatools-backend
+    env: python
+    plan: free
+    buildCommand: |
+      pip install -r requirements.txt
+      python manage.py collectstatic --noinput
+    startCommand: daphne -b 0.0.0.0 -p $PORT sajhatools.asgi:application
+    autoDeploy: true
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase: sajhatools-db
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: "sajhatools-backend.onrender.com,localhost,127.0.0.1"
+      - key: REDIS_URL
+        fromService: sajhatools-redis
+      - key: SENDGRID_API_KEY
+        sync: false
+      - key: DEFAULT_FROM_EMAIL
+        sync: false
+    disks:
+      - name: media
+        mountPath: /opt/render/project/src/media
+        sizeGB: 1
+
+databases:
+  - name: sajhatools-db
+    plan: free
+
+services:
+  - type: redis
+    name: sajhatools-redis
+    ipAllowList: [] 

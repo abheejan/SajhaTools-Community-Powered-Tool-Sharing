@@ -7,7 +7,7 @@ from channels.auth import AuthMiddlewareStack
 import messaging.routing
 import core.routing
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'community_tool_share.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'sajhatools.settings')
 
 # Combine the websocket URL patterns from all apps into one list
 combined_patterns = messaging.routing.websocket_urlpatterns + core.routing.websocket_urlpatterns
