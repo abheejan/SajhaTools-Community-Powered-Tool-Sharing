@@ -9,7 +9,7 @@
   force = true
 
 # Optional: SPA-style fallback to index.html if you add one later
-# [[redirects]]
-#   from = "/*"
-#   to = "/index.html"
-#   status = 200 
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200 
