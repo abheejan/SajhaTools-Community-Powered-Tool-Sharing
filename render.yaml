@@ -10,7 +10,9 @@ services:
     autoDeploy: true
     envVars:
       - key: DATABASE_URL
-        fromDatabase: sajhatools-db
+        fromDatabase:
+          name: sajhatools-db
+          property: connectionString
       - key: SECRET_KEY
         generateValue: true
       - key: DEBUG
@@ -18,7 +20,10 @@ services:
       - key: ALLOWED_HOSTS
         value: "sajhatools-backend.onrender.com,localhost,127.0.0.1"
       - key: REDIS_URL
-        fromService: sajhatools-redis
+        fromService:
+          type: redis
+          name: sajhatools-redis
+          property: connectionString
       - key: SENDGRID_API_KEY
         sync: false
       - key: DEFAULT_FROM_EMAIL
