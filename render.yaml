@@ -28,11 +28,10 @@ services:
         mountPath: /opt/render/project/src/media
         sizeGB: 1
 
-databases:
-  - name: sajhatools-db
-    plan: free
-
-services:
   - type: redis
     name: sajhatools-redis
-    ipAllowList: [] 
+    ipAllowList: []
+
+databases:
+  - name: sajhatools-db
+    plan: free 
