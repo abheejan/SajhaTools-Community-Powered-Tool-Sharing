@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SajhaTools</title>
+  <link rel="stylesheet" href="/css/output.css">
+</head>
+<body class="min-h-screen bg-gray-50 text-gray-900">
+  <header class="border-b bg-white">
+    <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
+      <h1 class="text-xl font-semibold">SajhaTools</h1>
+      <nav class="space-x-4 text-sm">
+        <a class="text-blue-600 hover:underline" href="/">Home</a>
+        <a class="text-blue-600 hover:underline" href="/admin/">Admin</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-4 py-12">
+    <h2 class="text-3xl font-bold mb-4">Community Powered Tool Sharing</h2>
+    <p class="text-gray-700 mb-6">Welcome! This static landing page is served by Netlify. App features run on the Django backend.</p>
+    <div class="space-x-3">
+      <a href="/api/health" class="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">API Health</a>
+      <a href="https://github.com/abheejan/SajhaTools-Community-Powered-Tool-Sharing" class="inline-block border px-4 py-2 rounded hover:bg-gray-100">GitHub</a>
+    </div>
+  </main>
+
+  <footer class="border-t bg-white">
+    <div class="max-w-5xl mx-auto px-4 py-6 text-sm text-gray-600">
+      © <span id="year"></span> SajhaTools
+    </div>
+  </footer>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html> 
